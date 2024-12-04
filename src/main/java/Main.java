@@ -6,7 +6,7 @@ public class Main {
         Elaboration elaboration = new Elaboration();
 
         User user = new User();
-        List<User> users = user.generateUsers(2,900, 10000, 0.2, 0.1);
+        List<User> users = user.generateUsers(10,900, 10000, 0.2, 0.1);
 
         Server server = new Server();
         List<Server> servers = server.generateServers(3, 140000,150000);
@@ -25,5 +25,12 @@ public class Main {
             }
             System.out.println("\n");
         }
+
+        AlgoritmAssociation algoritmAssociation = new AlgoritmAssociation(users, servers);
+        algoritmAssociation.associationUserServer(users, servers, elaboration);
+        algoritmAssociation.printAM();
+
+        // TODO: per ora funziona l'algortimo, verificare bene il funzionamento stampando un po di valori per bene
+        // TODO: implementare random e tempi
     }
 }

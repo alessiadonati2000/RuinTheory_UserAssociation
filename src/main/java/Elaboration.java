@@ -4,13 +4,11 @@ public class Elaboration {
     private User user;
     private Server server;
     final double bandwidth = 20 * Math.pow(10, 6);
-    private Map<User, Double> ruinProbability;
     private Map<User, Double> computationTime;
-    private List<Match> snr;
-    private List<Match> transmissionTime;
 
     public Elaboration() {}
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public List<Match> calculateSNR(User user, Server server) {
         List<Match> snr = new ArrayList<>();
         double snr_value = Math.random()*1500;
@@ -28,6 +26,7 @@ public class Elaboration {
         throw new IllegalArgumentException("No corresponding value found");
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public List<Match> calculateTransmissionTime(User user, Server server, List<Match> snr) {
         double transmissionTime_value = 0.0;
         double uplinkDataRate = 0.0;
@@ -49,6 +48,7 @@ public class Elaboration {
         throw new IllegalArgumentException("No corresponding value found");
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     static int fattoriale(int j) {
         if (j == 0 || j == 1) {
             return 1;
@@ -57,8 +57,7 @@ public class Elaboration {
         }
     }
 
-    private double calculateRuinProbability(double time) {
-        //TODO implementare per bene il calcolo dell aprob fi rovina, magari dividendo i due calcoli
+    private double calculateRuinProbability(Server server, double time) {
         double ruinProbability = 0.0;
 
         double sumTask = 0;
@@ -70,13 +69,25 @@ public class Elaboration {
         term = (server.getBuffer() - sumTask)/( (server.COMPUTING_CAPACITY * time)/ server.CPU_CYCLExBIT );
         ruinProbability = 1 / (1 + Math.exp(term));
 
-        System.out.printf("Probabilità di rovina: %.10f\n", probabilitaRovina);
-        double gradoRovina = utente.getDimTask() / probabilitaRovina;
+        return ruinProbability;
+    }
 
-        if (Double.isNaN(probabilitaRovina) || Double.isInfinite(probabilitaRovina) || Double.isInfinite(gradoRovina)){
-            System.exit(0);
-        }
+    private double calculateRuinDegree(User user, Server server){
+        double ruinDegree = 0.0;
+        ruinDegree = user.getTask() / calculateRuinProbability(server, 0.1);
+        return ruinDegree;
+    }
 
-        return gradoRovina;
+    public Map<User, Double> associateUserRuinDegree(User user, Server server) {
+        Map<User, Double> ruinDegreeMap = new HashMap<>();
+        double ruinDegree = calculateRuinDegree(user, server);
+        ruinDegreeMap.put(user, ruinDegree);
+        return ruinDegreeMap;
+    }
+
+    public List<User> buildPriorityList(Server server) {
+        server.getPropostedUsers().sort(Comparator.comparing(user -> associateUserRuinDegree(user, server).get(user)));
+        List<User> priorityList = server.getPropostedUsers();
+        return priorityList;
     }
 }
