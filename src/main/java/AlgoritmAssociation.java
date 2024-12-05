@@ -1,5 +1,4 @@
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class AlgoritmAssociation extends Association{
 
@@ -11,7 +10,6 @@ public class AlgoritmAssociation extends Association{
     }
 
     public void associationUserServer(List<User> users, List<Server> servers, Elaboration elaboration) {
-
         inizializeAM();
 
         System.out.println("//////////////////////////////////////////////////////////////////\n");
@@ -26,14 +24,14 @@ public class AlgoritmAssociation extends Association{
 
         for (Server server : servers) {
             System.out.println("ELABORATION IN " + server + "\n");
-
             System.out.println("List of proposed users:\n" + server.getPropostedUsers() + "\n");
 
-            System.out.println("START WITH RUIN PROBABILITY\n");
+            System.out.println("-------------START WITH RUIN PROBABILITY-------------");
             for (User proposedUser : server.getPropostedUsers()){
-                elaboration.associateUserRuinDegree(proposedUser, server);
+                Map<User, Double> ruinDegreeMap = elaboration.associateUserRuinDegree(proposedUser, server);
+                System.out.println(proposedUser + " Ruin degree: " + ruinDegreeMap.get(proposedUser));
             }
-            System.out.println("END\n");
+            System.out.println("-------------------------END-------------------------\n");
 
             List<User> priorityList = elaboration.buildPriorityList(server);
             System.out.println("Priority list:\n" + priorityList + "\n");
@@ -75,6 +73,7 @@ public class AlgoritmAssociation extends Association{
         for (Server server : servers) {
             List<Match> snr = elaboration.calculateSNR(user, server);
             double snr_value = elaboration.getSNR(user, server, snr);
+            System.out.println(user + " " + server + " SNR: " + (int) snr_value);
             if (snr_value > bestSNR) {
                 bestSNR = snr_value;
                 bestServer = server;
