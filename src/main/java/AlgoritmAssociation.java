@@ -1,6 +1,7 @@
 import java.util.*;
 
 public class AlgoritmAssociation extends Association{
+    private List<Match> snr;
 
     public AlgoritmAssociation(List<User> user, List<Server> server){
         this.users = user;
@@ -71,7 +72,7 @@ public class AlgoritmAssociation extends Association{
         double bestSNR = Double.NEGATIVE_INFINITY;
 
         for (Server server : servers) {
-            List<Match> snr = elaboration.calculateSNR(user, server);
+            snr = elaboration.calculateSNR(user, server);
             double snr_value = elaboration.getSNR(user, server, snr);
             System.out.println(user + " " + server + " SNR: " + (int) snr_value);
             if (snr_value > bestSNR) {
@@ -103,5 +104,9 @@ public class AlgoritmAssociation extends Association{
         System.out.println("User choose: " + secondBestServer);
         System.out.println();
         return secondBestServer;
+    }
+
+    public List<Match> getListSNR() {
+        return snr;
     }
 }

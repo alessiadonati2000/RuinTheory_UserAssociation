@@ -4,7 +4,6 @@ public class Elaboration {
     private User user;
     private Server server;
     final double bandwidth = 20 * Math.pow(10, 6);
-    private Map<User, Double> computationTime;
 
     public Elaboration() {}
 
@@ -87,6 +86,36 @@ public class Elaboration {
 
     public List<User> buildPriorityList(Server server) {
         server.getPropostedUsers().sort(Comparator.comparing(user -> associateUserRuinDegree(user, server).get(user)));
+        List<User> priorityList = server.getPropostedUsers();
+        return priorityList;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    private double calculateComputationTime(User user, Server server) {
+        double computationTime = 0.0;
+        computationTime = (server.CPU_CYCLExBIT * user.getTask()) / server.COMPUTING_CAPACITY;
+        return computationTime;
+    }
+
+    public Map<User, Double> associateUserComputingTime(User user, Server server) {
+        Map<User, Double> computingTimeMap = new HashMap<>();
+        double computationTime = calculateComputationTime(user, server);
+        computingTimeMap.put(user, computationTime);
+        return computingTimeMap;
+    }
+
+    public Map<User, Double> associateUserTotalSystemTime(User user, Server server) {
+        Map<User, Double> totalSystemTimeMap = new HashMap<>();
+        double totalSystemTime = calculateComputationTime(user, server) + tempotrasmissionedellutenteconquelserver;
+        totalSystemTimeMap.put(user, totalSystemTime);
+        return totalSystemTimeMap;
+    }
+
+    //TODO:  mi sono icartata col calcolo dei tempo sistemare la parte in cui il server deve ordinare gli utenti in base al loro tempo di sistema più basso
+
+    public List<User> buildPriorityListTotalTime(Server server) {
+        server.getPropostedUsers().sort(Comparator.comparing(user -> associateUserTotalSystemTime(user, server).get(user)));
         List<User> priorityList = server.getPropostedUsers();
         return priorityList;
     }
