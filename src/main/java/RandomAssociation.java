@@ -26,6 +26,13 @@ public class RandomAssociation extends Association{
             System.out.println("ELABORATION IN " + server + "\n");
             System.out.println("List of proposed users:\n" + server.getPropostedUsers() + "\n");
 
+            System.out.println("----------------------------CALCULATE TRANSMISSION TIME----------------------------");
+            for (User proposedUser : server.getPropostedUsers()) {
+                double transmissionTime_value = elaboration.calculateTransmissionTime(proposedUser, server, elaboration.getSNR_list());
+                System.out.println(proposedUser + " " + server + " Transmition time: " + transmissionTime_value);
+            }
+            System.out.println("-----------------------------------------END---------------------------------------\n");
+
             System.out.println("START ASSOCIATION TASK-BUFFER");
             for (User user : server.getPropostedUsers()) {
                 System.out.println(user);

@@ -5,6 +5,7 @@ import java.util.Objects;
 
 public class Server {
     private double buffer;
+    private double originalBuffer;
     final double COMPUTING_CAPACITY = 6 * Math.pow(10, 5);
     final int CPU_CYCLExBIT = 10;
     private List<User> propostedUsers;
@@ -13,11 +14,16 @@ public class Server {
 
     public Server(double buffer) {
         this.buffer = buffer;
+        this.originalBuffer = buffer;
         this.propostedUsers = new ArrayList<User>();
     }
 
     public double getBuffer() {
         return buffer;
+    }
+
+    public double getOriginalBuffer() {
+        return originalBuffer;
     }
 
     public List<User> getPropostedUsers() {
@@ -43,6 +49,10 @@ public class Server {
         } else {
             System.out.printf("Buffer's server cannot support this task");
         }
+    }
+
+    public void setBuffer(double buffer) {
+        this.buffer = buffer;
     }
 
     @Override

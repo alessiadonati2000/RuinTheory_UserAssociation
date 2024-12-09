@@ -20,8 +20,7 @@ public class Elaboration {
     }
 
     public double getSNR_value(User user, Server server, List<Match> snr) {
-        snr = getSNR_list();
-        for (Match match : snr) {
+        for (Match match : getSNR_list()) {
             if (match.getUser().equals(user) && match.getServer().equals(server)) {
                 return match.getValue();
             }
@@ -34,7 +33,12 @@ public class Elaboration {
     }
 
     public void printSNRList() {
-        System.out.println(snr_list);
+        for (int i = 0; i < getSNR_list().size(); i++) {
+            System.out.println(snr_list.get(i).getUser());
+            System.out.println(snr_list.get(i).getServer());
+            System.out.println(snr_list.get(i).getValue() + "\n");
+        }
+
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -42,24 +46,15 @@ public class Elaboration {
         double transmissionTime_value = 0.0;
         double uplinkDataRate = 0.0;
 
-        double snr = getSNR_value(user, server, snr_list);
-        System.out.println("SNR: " + snr);
-        double var = (Math.log(1 + snr) / Math.log(2));
-        System.out.println(var);
-        System.out.println(bandwidth);
-        System.out.println(server.getPropostedUsers().size());
-
-        uplinkDataRate = (bandwidth / server.getPropostedUsers().size()) * (Math.log(1 + snr) / Math.log(2));
-        System.out.println(uplinkDataRate);
-
+        uplinkDataRate = (bandwidth / server.getPropostedUsers().size()) * (Math.log(1 + getSNR_value(user, server, snr_list)) / Math.log(2));
         transmissionTime_value = user.getTask() / uplinkDataRate;
         transmissionTime_list.add(new Match(user, server, transmissionTime_value));
 
         return transmissionTime_value;
     }
 
-    public double getTransmissionTime_value(User user, Server server, List<Match> transmissionTime_list) {
-        for (Match match : transmissionTime_list) {
+    public double getTransmissionTime_value(User user, Server server) {
+        for (Match match : getTransmissionTime_list()) {
             if (match.getUser().equals(user) && match.getServer().equals(server)) {
                 return match.getValue();
             }
@@ -131,7 +126,7 @@ public class Elaboration {
 
     public Map<User, Double> associateUserTotalSystemTime(User user, Server server) {
         Map<User, Double> totalSystemTimeMap = new HashMap<>();
-        double totalSystemTime = calculateComputationTime(user, server) + getTransmissionTime_value(user, server, transmissionTime_list);
+        double totalSystemTime = calculateComputationTime(user, server) + getTransmissionTime_value(user, server);
         totalSystemTimeMap.put(user, totalSystemTime);
         return totalSystemTimeMap;
     }

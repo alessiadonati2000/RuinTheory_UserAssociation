@@ -26,12 +26,20 @@ public class AlgoritmAssociation extends Association{
             System.out.println("ELABORATION IN " + server + "\n");
             System.out.println("List of proposed users:\n" + server.getPropostedUsers() + "\n");
 
+            System.out.println("----------------------------CALCULATE TRANSMISSION TIME----------------------------");
+            for (User proposedUser : server.getPropostedUsers()) {
+                double transmissionTime_value = elaboration.calculateTransmissionTime(proposedUser, server, elaboration.getSNR_list());
+                System.out.println(proposedUser + " " + server + " Transmition time: " + transmissionTime_value);
+            }
+            System.out.println("-----------------------------------------END---------------------------------------\n");
+
             System.out.println("-------------START WITH RUIN PROBABILITY-------------");
             for (User proposedUser : server.getPropostedUsers()){
                 Map<User, Double> ruinDegreeMap = elaboration.associateUserRuinDegree(proposedUser, server);
                 System.out.println(proposedUser + " Ruin degree: " + ruinDegreeMap.get(proposedUser));
             }
             System.out.println("-------------------------END-------------------------\n");
+
 
             List<User> priorityList = elaboration.buildPriorityList(server);
             System.out.println("Priority list:\n" + priorityList + "\n");
@@ -50,6 +58,12 @@ public class AlgoritmAssociation extends Association{
                     System.out.println("ERROR: BUFFER EXAUSTED");
                 }
             }
+
+            // Reset dei server
+            for (Server s : servers) {
+                s.setBuffer((int) s.getOriginalBuffer());
+            }
+
             System.out.print("//////////////////////////////////////////////////////////////////\n");
             System.out.println();
         }
@@ -62,6 +76,7 @@ public class AlgoritmAssociation extends Association{
         for (Server server : servers) {
             double snr_value = elaboration.calculateSNR(user, server);
             System.out.println(user + " " + server + " SNR: " + (int) snr_value);
+
             if (snr_value > bestSNR) {
                 bestSNR = snr_value;
                 bestServer = server;

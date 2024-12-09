@@ -6,9 +6,8 @@ public class Main {
         Elaboration elaboration = new Elaboration();
 
         User user = new User();
-        List<User> users = user.generateUsers(3,900, 10000, 0.2, 0.1);
+        List<User> users = user.generateUsers(1,900, 10000, 0.2, 0.1);
         List<User> usersRandom = deepCopyUser(users);
-        List<User> usersTime = deepCopyUser(users);
         for (User u : users){
             System.out.println(u);
         }
@@ -16,28 +15,26 @@ public class Main {
         Server server = new Server();
         List<Server> servers = server.generateServers(3, 140000,150000);
         List<Server> serversRandom = deepCopyServer(servers);
-        List<Server> serversTime = deepCopyServer(servers);
         for (Server s : servers) {
             System.out.println(s);
         }
 
-        System.out.println("---------------ASSOCIATION WITH ALGORITM---------------");
+        System.out.println("---------------ASSOCIATION WITH ALGORITM---------------\n");
         AlgoritmAssociation algoritmAssociation = new AlgoritmAssociation(users, servers, elaboration);
         algoritmAssociation.associationUserServer(users, servers);
 
-        System.out.println("----------------ASSOCIATION WITH RANDOM-----------------");
-        RandomAssociation randomAssociation = new RandomAssociation(usersRandom, serversRandom, elaboration);
-        randomAssociation.randomAssociation(usersRandom, serversRandom);
+        elaboration.printSNRList();
 
-        /*System.out.println("-----------------ASSOCIATION WITH TIME-----------------");
-        TimeAssociation timeAssociation = new TimeAssociation(usersTime, serversTime, elaboration);
-        timeAssociation.associationTime(usersTime, serversTime);*/
+        //TODO: c'è qualche problema con il calcolo del tempo di trasmissione del randomico
+        // che sia la lista di trasmissione il problema? devo svuotarla prima di riempirla?
+        // magari stampa tutti i singoli valori per vedere se c'è qualche incongruenza
+        System.out.println("----------------ASSOCIATION WITH RANDOM-----------------\n");
+        RandomAssociation randomAssociation = new RandomAssociation(usersRandom, serversRandom, algoritmAssociation.elaboration);
+        randomAssociation.randomAssociation(usersRandom, serversRandom);
 
         System.out.println("Associated users with algoritm: " + algoritmAssociation.getTotalNumberAssociatedUsers());
         System.out.println("Associated users with random: " + randomAssociation.getTotalNumberAssociatedUsers());
-        //System.out.println("Associated users with time algoritm: " + timeAssociation.getTotalNumberAssociatedUsers());
 
-        // TODO: calcola i tempi di calcolo e trasmissione
     }
 
     private static List<Server> deepCopyServer(List<Server> originalList) {
