@@ -1,16 +1,15 @@
 import java.util.*;
 
 public class AlgoritmAssociation extends Association{
-    private List<Match> snr;
 
-    public AlgoritmAssociation(List<User> user, List<Server> server){
+    public AlgoritmAssociation(List<User> user, List<Server> server, Elaboration elaboration){
         this.users = user;
         this.servers = server;
         this.associationMatrix = new int[user.size()][server.size()];
-        this.elaboration = new Elaboration();
+        this.elaboration = elaboration;
     }
 
-    public void associationUserServer(List<User> users, List<Server> servers, Elaboration elaboration) {
+    public void associationUserServer(List<User> users, List<Server> servers) {
         inizializeAM();
 
         System.out.println("//////////////////////////////////////////////////////////////////\n");
@@ -49,17 +48,6 @@ public class AlgoritmAssociation extends Association{
 
                 } else {
                     System.out.println("ERROR: BUFFER EXAUSTED");
-
-                    Server newServer = chooseSecondBestServer(user, server);
-                    if (newServer != null) {
-                        newServer.getPropostedUsers().add(user);
-
-                        if (newServer.getBuffer() >= user.getTask()) {
-                            setValueAM(users.indexOf(user), servers.indexOf(newServer), 1);
-                            newServer.reduceBuffer(user.getTask());
-                            System.out.println("Update buffer: " + (int) newServer.getBuffer() + "\n");
-                        }
-                    }
                 }
             }
             System.out.print("//////////////////////////////////////////////////////////////////\n");
@@ -72,8 +60,7 @@ public class AlgoritmAssociation extends Association{
         double bestSNR = Double.NEGATIVE_INFINITY;
 
         for (Server server : servers) {
-            snr = elaboration.calculateSNR(user, server);
-            double snr_value = elaboration.getSNR(user, server, snr);
+            double snr_value = elaboration.calculateSNR(user, server);
             System.out.println(user + " " + server + " SNR: " + (int) snr_value);
             if (snr_value > bestSNR) {
                 bestSNR = snr_value;
@@ -86,27 +73,4 @@ public class AlgoritmAssociation extends Association{
         return bestServer;
     }
 
-    private Server chooseSecondBestServer(User user, Server serverActual) {
-        Server secondBestServer = null;
-        double bestSNR = Double.NEGATIVE_INFINITY;
-
-        for (Server server : servers) {
-            if (server != serverActual) {
-                List<Match> snr = elaboration.calculateSNR(user, server);
-                double snr_value = elaboration.getSNR(user, server, snr);
-                if (snr_value > bestSNR) {
-                    bestSNR = snr_value;
-                    secondBestServer = server;
-                }
-            }
-        }
-
-        System.out.println("User choose: " + secondBestServer);
-        System.out.println();
-        return secondBestServer;
-    }
-
-    public List<Match> getListSNR() {
-        return snr;
-    }
 }

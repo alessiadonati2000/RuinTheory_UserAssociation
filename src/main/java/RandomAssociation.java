@@ -2,14 +2,14 @@ import java.util.*;
 
 public class RandomAssociation extends Association{
 
-    public RandomAssociation(List<User> user, List<Server> server){
+    public RandomAssociation(List<User> user, List<Server> server, Elaboration elaboration){
         this.users = user;
         this.servers = server;
         this.associationMatrix = new int[user.size()][server.size()];
-        this.elaboration = new Elaboration();
+        this.elaboration = elaboration;
     }
 
-    public void randomAssociation(List<User> users, List<Server> servers, Elaboration elaboration) {
+    public void randomAssociation(List<User> users, List<Server> servers) {
         inizializeAM();
 
         System.out.println("//////////////////////////////////////////////////////////////////\n");

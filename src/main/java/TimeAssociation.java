@@ -1,22 +1,21 @@
 import java.util.*;
 
 public class TimeAssociation extends Association{
-    private List<Match> transmissionTime;
 
-    public TimeAssociation(List<User> user, List<Server> server){
+    public TimeAssociation(List<User> user, List<Server> server, Elaboration elaboration){
         this.users = user;
         this.servers = server;
         this.associationMatrix = new int[user.size()][server.size()];
-        this.elaboration = new Elaboration();
+        this.elaboration = elaboration;
     }
 
-    public void associationTime(List<User> users, List<Server> servers, Elaboration elaboration, AlgoritmAssociation algoritmAssociation) {
+    public void associationTime(List<User> users, List<Server> servers) {
         inizializeAM();
 
         System.out.println("//////////////////////////////////////////////////////////////////\n");
         System.out.println("USER PROPOSED TO BEST SERVER FOR HIM\n");
         for (User user : users) {
-            Server bestServer = chooseBestServerTime(user, algoritmAssociation);
+            Server bestServer = chooseBestServerTime(user);
             if (bestServer != null) {
                 bestServer.getPropostedUsers().add(user);
             }
@@ -29,12 +28,12 @@ public class TimeAssociation extends Association{
 
             System.out.println("-------------START WITH COMPUTATION TIME-------------");
             for (User proposedUser : server.getPropostedUsers()){
-                Map<User, Double> ruinDegreeMap = elaboration.associateUserRuinDegree(proposedUser, server);
-                System.out.println(proposedUser + " Ruin degree: " + ruinDegreeMap.get(proposedUser));
+                Map<User, Double> totalSystemTimeMap = elaboration.associateUserComputingTime(proposedUser, server);
+                System.out.println(proposedUser + " Total system time: " + totalSystemTimeMap.get(proposedUser));
             }
             System.out.println("-------------------------END-------------------------\n");
 
-            List<User> priorityList = elaboration.buildPriorityList(server);
+            List<User> priorityList = elaboration.buildPriorityListTotalTime(server);
             System.out.println("Priority list:\n" + priorityList + "\n");
 
             System.out.println("START ASSOCIATION TASK-BUFFER");
@@ -56,13 +55,13 @@ public class TimeAssociation extends Association{
         }
     }
 
-    private Server chooseBestServerTime(User user, AlgoritmAssociation algoritmAssociation) {
+    private Server chooseBestServerTime(User user) {
         Server bestServer = null;
         double bestTransmissionTime = Double.POSITIVE_INFINITY;
 
         for (Server server : servers) {
-            transmissionTime = elaboration.calculateTransmissionTime(user, server, algoritmAssociation.getListSNR());
-            double transmissionTime_value = elaboration.getTransmissionTime(user, server, transmissionTime);
+            List<Match> snr_list = elaboration.getSNR_list();
+            double transmissionTime_value = elaboration.calculateTransmissionTime(user, server, snr_list);
             System.out.println(user + " " + server + " Trans. time: " + (int) transmissionTime_value);
             if (transmissionTime_value < bestTransmissionTime) {
                 bestTransmissionTime = transmissionTime_value;

@@ -6,8 +6,9 @@ public class Main {
         Elaboration elaboration = new Elaboration();
 
         User user = new User();
-        List<User> users = user.generateUsers(100,900, 10000, 0.2, 0.1);
+        List<User> users = user.generateUsers(3,900, 10000, 0.2, 0.1);
         List<User> usersRandom = deepCopyUser(users);
+        List<User> usersTime = deepCopyUser(users);
         for (User u : users){
             System.out.println(u);
         }
@@ -15,19 +16,28 @@ public class Main {
         Server server = new Server();
         List<Server> servers = server.generateServers(3, 140000,150000);
         List<Server> serversRandom = deepCopyServer(servers);
+        List<Server> serversTime = deepCopyServer(servers);
         for (Server s : servers) {
             System.out.println(s);
         }
 
-        AlgoritmAssociation algoritmAssociation = new AlgoritmAssociation(users, servers);
-        algoritmAssociation.associationUserServer(users, servers, elaboration);
+        System.out.println("---------------ASSOCIATION WITH ALGORITM---------------");
+        AlgoritmAssociation algoritmAssociation = new AlgoritmAssociation(users, servers, elaboration);
+        algoritmAssociation.associationUserServer(users, servers);
 
-        RandomAssociation randomAssociation = new RandomAssociation(usersRandom, serversRandom);
-        randomAssociation.randomAssociation(users, servers, elaboration);
+        System.out.println("----------------ASSOCIATION WITH RANDOM-----------------");
+        RandomAssociation randomAssociation = new RandomAssociation(usersRandom, serversRandom, elaboration);
+        randomAssociation.randomAssociation(usersRandom, serversRandom);
+
+        /*System.out.println("-----------------ASSOCIATION WITH TIME-----------------");
+        TimeAssociation timeAssociation = new TimeAssociation(usersTime, serversTime, elaboration);
+        timeAssociation.associationTime(usersTime, serversTime);*/
 
         System.out.println("Associated users with algoritm: " + algoritmAssociation.getTotalNumberAssociatedUsers());
         System.out.println("Associated users with random: " + randomAssociation.getTotalNumberAssociatedUsers());
+        //System.out.println("Associated users with time algoritm: " + timeAssociation.getTotalNumberAssociatedUsers());
 
+        // TODO: calcola i tempi di calcolo e trasmissione
     }
 
     private static List<Server> deepCopyServer(List<Server> originalList) {

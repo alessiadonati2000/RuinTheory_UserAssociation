@@ -1,22 +1,26 @@
 import java.util.*;
 
 public class Elaboration {
-    private User user;
-    private Server server;
-    final double bandwidth = 20 * Math.pow(10, 6);
+    private List<Match> snr_list;
+    private List<Match> transmissionTime_list;
 
-    public Elaboration() {}
+    final double bandwidth;
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public List<Match> calculateSNR(User user, Server server) {
-        List<Match> snr = new ArrayList<>();
-        double snr_value = Math.random()*1500;
-        snr.add(new Match(user, server, snr_value));
-
-        return snr;
+    public Elaboration() {
+        this.snr_list = new ArrayList<>();
+        this.transmissionTime_list = new ArrayList<>();
+        this.bandwidth = 20 * Math.pow(10, 6);
     }
 
-    public double getSNR(User user, Server server, List<Match> snr) {
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public double calculateSNR(User user, Server server) {
+        double snr_value = Math.random()*1500;
+        snr_list.add(new Match(user, server, snr_value));
+        return snr_value;
+    }
+
+    public double getSNR_value(User user, Server server, List<Match> snr) {
+        snr = getSNR_list();
         for (Match match : snr) {
             if (match.getUser().equals(user) && match.getServer().equals(server)) {
                 return match.getValue();
@@ -25,26 +29,46 @@ public class Elaboration {
         throw new IllegalArgumentException("No corresponding value found");
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public List<Match> calculateTransmissionTime(User user, Server server, List<Match> snr) {
-        double transmissionTime_value = 0.0;
-        double uplinkDataRate = 0.0;
-        List<Match> transmissionTime = new ArrayList<>();
-
-        uplinkDataRate = (bandwidth / server.getPropostedUsers().size()) * (Math.log(1 + getSNR(user, server, snr)) / Math.log(2));
-        transmissionTime_value = user.getTask() / uplinkDataRate;
-        transmissionTime.add(new Match(user, server, transmissionTime_value));
-
-        return transmissionTime;
+    public List<Match> getSNR_list() {
+        return snr_list;
     }
 
-    public double getTransmissionTime(User user, Server server, List<Match> transmissionTime) {
-        for (Match match : transmissionTime) {
+    public void printSNRList() {
+        System.out.println(snr_list);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public double calculateTransmissionTime(User user, Server server, List<Match> snr_list) {
+        double transmissionTime_value = 0.0;
+        double uplinkDataRate = 0.0;
+
+        double snr = getSNR_value(user, server, snr_list);
+        System.out.println("SNR: " + snr);
+        double var = (Math.log(1 + snr) / Math.log(2));
+        System.out.println(var);
+        System.out.println(bandwidth);
+        System.out.println(server.getPropostedUsers().size());
+
+        uplinkDataRate = (bandwidth / server.getPropostedUsers().size()) * (Math.log(1 + snr) / Math.log(2));
+        System.out.println(uplinkDataRate);
+
+        transmissionTime_value = user.getTask() / uplinkDataRate;
+        transmissionTime_list.add(new Match(user, server, transmissionTime_value));
+
+        return transmissionTime_value;
+    }
+
+    public double getTransmissionTime_value(User user, Server server, List<Match> transmissionTime_list) {
+        for (Match match : transmissionTime_list) {
             if (match.getUser().equals(user) && match.getServer().equals(server)) {
                 return match.getValue();
             }
         }
         throw new IllegalArgumentException("No corresponding value found");
+    }
+
+    public List<Match> getTransmissionTime_list() {
+        return transmissionTime_list;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -107,12 +131,10 @@ public class Elaboration {
 
     public Map<User, Double> associateUserTotalSystemTime(User user, Server server) {
         Map<User, Double> totalSystemTimeMap = new HashMap<>();
-        double totalSystemTime = calculateComputationTime(user, server) + tempotrasmissionedellutenteconquelserver;
+        double totalSystemTime = calculateComputationTime(user, server) + getTransmissionTime_value(user, server, transmissionTime_list);
         totalSystemTimeMap.put(user, totalSystemTime);
         return totalSystemTimeMap;
     }
-
-    //TODO:  mi sono icartata col calcolo dei tempo sistemare la parte in cui il server deve ordinare gli utenti in base al loro tempo di sistema più basso
 
     public List<User> buildPriorityListTotalTime(Server server) {
         server.getPropostedUsers().sort(Comparator.comparing(user -> associateUserTotalSystemTime(user, server).get(user)));
