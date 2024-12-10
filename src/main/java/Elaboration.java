@@ -20,10 +20,15 @@ public class Elaboration {
     }
 
     public double getSNR_value(User user, Server server, List<Match> snr) {
-        for (Match match : getSNR_list()) {
-            if (match.getUser().equals(user) && match.getServer().equals(server)) {
+        for (Match match : snr) {
+            double userMatchTask = match.getUser().getTask();
+            double serverMatchBuffer = match.getServer().getBuffer();
+            if((int) userMatchTask == (int) user.getTask() && (int) serverMatchBuffer == (int) server.getBuffer()) {
                 return match.getValue();
             }
+            /*if (match.getUser().equals(user) && match.getServer().equals(server)) {
+                return match.getValue();
+            }*/
         }
         throw new IllegalArgumentException("No corresponding value found");
     }
@@ -45,6 +50,11 @@ public class Elaboration {
     public double calculateTransmissionTime(User user, Server server, List<Match> snr_list) {
         double transmissionTime_value = 0.0;
         double uplinkDataRate = 0.0;
+
+        System.out.println(server.getPropostedUsers().size());
+        double snrvalore = getSNR_value(user, server, snr_list);
+        System.out.println(getSNR_value(user, server, snr_list));
+        System.out.println((Math.log(1 + getSNR_value(user, server, snr_list)) / Math.log(2)));
 
         uplinkDataRate = (bandwidth / server.getPropostedUsers().size()) * (Math.log(1 + getSNR_value(user, server, snr_list)) / Math.log(2));
         transmissionTime_value = user.getTask() / uplinkDataRate;

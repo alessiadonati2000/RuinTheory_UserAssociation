@@ -59,13 +59,13 @@ public class AlgoritmAssociation extends Association{
                 }
             }
 
-            // Reset dei server
-            for (Server s : servers) {
-                s.setBuffer((int) s.getOriginalBuffer());
-            }
-
             System.out.print("//////////////////////////////////////////////////////////////////\n");
             System.out.println();
+        }
+
+        // Reset dei server
+        for (Server s : servers) {
+            s.setBuffer((int) s.getOriginalBuffer());
         }
     }
 

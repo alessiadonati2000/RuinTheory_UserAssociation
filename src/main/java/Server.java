@@ -62,10 +62,12 @@ public class Server {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        Server server = (Server) obj;
-        return Objects.equals(this.buffer, server.buffer);
+        if (obj.getClass() == Server.class) {
+            if(((Server) obj).getBuffer() == this.buffer) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

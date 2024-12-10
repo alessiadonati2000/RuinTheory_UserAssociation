@@ -13,7 +13,7 @@ public class Main {
         }
 
         Server server = new Server();
-        List<Server> servers = server.generateServers(3, 140000,150000);
+        List<Server> servers = server.generateServers(2, 140000,150000);
         List<Server> serversRandom = deepCopyServer(servers);
         for (Server s : servers) {
             System.out.println(s);
@@ -22,8 +22,6 @@ public class Main {
         System.out.println("---------------ASSOCIATION WITH ALGORITM---------------\n");
         AlgoritmAssociation algoritmAssociation = new AlgoritmAssociation(users, servers, elaboration);
         algoritmAssociation.associationUserServer(users, servers);
-
-        elaboration.printSNRList();
 
         //TODO: c'è qualche problema con il calcolo del tempo di trasmissione del randomico
         // che sia la lista di trasmissione il problema? devo svuotarla prima di riempirla?
