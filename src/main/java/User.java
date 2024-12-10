@@ -44,27 +44,6 @@ public class User {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        // obj è lo user che devo andare a cercare nella lista
-
-        // controllare che obj sia uno User
-        // facendo il casting a User, estrarre i valori per il matching e confrontarli con quelli dell'oggetto che invoca equals, cioè this.
-        // ritornare true o false
-        if (obj.getClass() == User.class) {
-            if(((User) obj).getTask() == task) {
-                return true;
-            }
-        }
-        return false;
-        /*
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        User user = (User) obj;
-        return Objects.equals(this.task, user.task);
-        */
-    }
-
-    @Override
     public int hashCode() {
         return Objects.hash(task);
     }

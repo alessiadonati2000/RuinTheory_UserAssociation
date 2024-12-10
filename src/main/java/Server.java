@@ -60,15 +60,6 @@ public class Server {
         return "Server (Buffer: " + (int) buffer + ")";
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj.getClass() == Server.class) {
-            if(((Server) obj).getBuffer() == this.buffer) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     @Override
     public int hashCode() {

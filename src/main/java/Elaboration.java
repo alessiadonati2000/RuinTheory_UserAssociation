@@ -2,13 +2,16 @@ import java.util.*;
 
 public class Elaboration {
     private List<Match> snr_list;
-    private List<Match> transmissionTime_list;
+    private List<Match> transmissionTime_listAlgoritm;
+    private List<Match> transmissionTime_listRandom;
+    private List<Match> computingTime_list;
 
     final double bandwidth;
 
     public Elaboration() {
         this.snr_list = new ArrayList<>();
-        this.transmissionTime_list = new ArrayList<>();
+        this.transmissionTime_listAlgoritm = new ArrayList<>();
+        this.transmissionTime_listRandom = new ArrayList<>();
         this.bandwidth = 20 * Math.pow(10, 6);
     }
 
@@ -19,16 +22,13 @@ public class Elaboration {
         return snr_value;
     }
 
-    public double getSNR_value(User user, Server server, List<Match> snr) {
-        for (Match match : snr) {
+    public double getSNR_value(User user, Server server) {
+        for (Match match : getSNR_list()) {
             double userMatchTask = match.getUser().getTask();
             double serverMatchBuffer = match.getServer().getBuffer();
             if((int) userMatchTask == (int) user.getTask() && (int) serverMatchBuffer == (int) server.getBuffer()) {
                 return match.getValue();
             }
-            /*if (match.getUser().equals(user) && match.getServer().equals(server)) {
-                return match.getValue();
-            }*/
         }
         throw new IllegalArgumentException("No corresponding value found");
     }
@@ -39,41 +39,78 @@ public class Elaboration {
 
     public void printSNRList() {
         for (int i = 0; i < getSNR_list().size(); i++) {
-            System.out.println(snr_list.get(i).getUser());
-            System.out.println(snr_list.get(i).getServer());
-            System.out.println(snr_list.get(i).getValue() + "\n");
+            System.out.println(snr_list.get(i).getUser() + " " + snr_list.get(i).getServer() + " SNR: " + (int) snr_list.get(i).getValue());
         }
-
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public double calculateTransmissionTime(User user, Server server, List<Match> snr_list) {
+    public double calculateTransmissionTime(User user, Server server, int flag) {
         double transmissionTime_value = 0.0;
         double uplinkDataRate = 0.0;
 
-        System.out.println(server.getPropostedUsers().size());
-        double snrvalore = getSNR_value(user, server, snr_list);
-        System.out.println(getSNR_value(user, server, snr_list));
-        System.out.println((Math.log(1 + getSNR_value(user, server, snr_list)) / Math.log(2)));
-
-        uplinkDataRate = (bandwidth / server.getPropostedUsers().size()) * (Math.log(1 + getSNR_value(user, server, snr_list)) / Math.log(2));
+        uplinkDataRate = (bandwidth / server.getPropostedUsers().size()) * (Math.log(1 + getSNR_value(user, server)) / Math.log(2));
         transmissionTime_value = user.getTask() / uplinkDataRate;
-        transmissionTime_list.add(new Match(user, server, transmissionTime_value));
+
+        if (flag == 0) {
+            transmissionTime_listAlgoritm.add(new Match(user, server, transmissionTime_value));
+        } else if (flag == 1) {
+            transmissionTime_listRandom.add(new Match(user, server, transmissionTime_value));
+        }
+
 
         return transmissionTime_value;
     }
 
-    public double getTransmissionTime_value(User user, Server server) {
-        for (Match match : getTransmissionTime_list()) {
-            if (match.getUser().equals(user) && match.getServer().equals(server)) {
+    public double getTransmissionTime_value(User user, Server server, List<Match> transmissionTime_list) {
+        for (Match match : transmissionTime_list) {
+            double userMatchTask = match.getUser().getTask();
+            double serverMatchBuffer = match.getServer().getBuffer();
+            if((int) userMatchTask == (int) user.getTask() && (int) serverMatchBuffer == (int) server.getBuffer()) {
                 return match.getValue();
             }
         }
         throw new IllegalArgumentException("No corresponding value found");
     }
 
-    public List<Match> getTransmissionTime_list() {
-        return transmissionTime_list;
+    public List<Match> getTransmissionTime_listAlgoritm() {
+        return transmissionTime_listAlgoritm;
+    }
+
+    public List<Match> getTransmissionTime_listRandom() {
+        return transmissionTime_listRandom;
+    }
+
+    public void printTransmissionTimeListAlgoritm() {
+        for (int i = 0; i < getTransmissionTime_listAlgoritm().size(); i++) {
+            System.out.println(transmissionTime_listAlgoritm.get(i).getUser() + " " + transmissionTime_listAlgoritm.get(i).getServer() + " Transmission Time: " + transmissionTime_listAlgoritm.get(i).getValue());
+        }
+    }
+
+    public void printTransmissionTimeListRandom() {
+        for (int i = 0; i < getTransmissionTime_listRandom().size(); i++) {
+            System.out.println(transmissionTime_listRandom.get(i).getUser() + " " + transmissionTime_listRandom.get(i).getServer() + " Transmission Time: " + transmissionTime_listRandom.get(i).getValue());
+        }
+    }
+
+    public double calculateMeanTransmissionTime(Server server, int flag) {
+        double meanTransmissionTime = 0.0;
+        double sum = 0.0;
+        if (flag == 0){
+            for (int i = 0; i < getTransmissionTime_listAlgoritm().size(); i++) {
+                if(getTransmissionTime_listAlgoritm().get(i).getServer().getBuffer() == server.getBuffer()) {
+                    sum += getTransmissionTime_listAlgoritm().get(i).getValue();
+                    meanTransmissionTime = sum / server.getPropostedUsers().size();
+                }
+            }
+        } else if (flag == 1) {
+            for (int i = 0; i < getTransmissionTime_listRandom().size(); i++) {
+                if(getTransmissionTime_listRandom().get(i).getServer().getBuffer() == server.getBuffer()) {
+                    sum += getTransmissionTime_listRandom().get(i).getValue();
+                    meanTransmissionTime = sum / server.getPropostedUsers().size();
+                }
+            }
+        }
+        return meanTransmissionTime;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -134,16 +171,16 @@ public class Elaboration {
         return computingTimeMap;
     }
 
-    public Map<User, Double> associateUserTotalSystemTime(User user, Server server) {
+    /*public Map<User, Double> associateUserTotalSystemTime(User user, Server server) {
         Map<User, Double> totalSystemTimeMap = new HashMap<>();
         double totalSystemTime = calculateComputationTime(user, server) + getTransmissionTime_value(user, server);
         totalSystemTimeMap.put(user, totalSystemTime);
         return totalSystemTimeMap;
-    }
+    }*/
 
-    public List<User> buildPriorityListTotalTime(Server server) {
+    /*public List<User> buildPriorityListTotalTime(Server server) {
         server.getPropostedUsers().sort(Comparator.comparing(user -> associateUserTotalSystemTime(user, server).get(user)));
         List<User> priorityList = server.getPropostedUsers();
         return priorityList;
-    }
+    }*/
 }

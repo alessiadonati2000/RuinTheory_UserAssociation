@@ -28,10 +28,17 @@ public class AlgoritmAssociation extends Association{
 
             System.out.println("----------------------------CALCULATE TRANSMISSION TIME----------------------------");
             for (User proposedUser : server.getPropostedUsers()) {
-                double transmissionTime_value = elaboration.calculateTransmissionTime(proposedUser, server, elaboration.getSNR_list());
+                double transmissionTime_value = elaboration.calculateTransmissionTime(proposedUser, server, 0);
                 System.out.println(proposedUser + " " + server + " Transmition time: " + transmissionTime_value);
             }
             System.out.println("-----------------------------------------END---------------------------------------\n");
+
+            /*System.out.println("----------------------------CALCULATE COMPUTING TIME----------------------------");
+            for (User proposedUser : server.getPropostedUsers()) {
+                double computingTime_value = elaboration.calculateTransmissionTime(proposedUser, server, elaboration.getSNR_list());
+                System.out.println(proposedUser + " " + server + " Computing time: " + computingTime_value);
+            }
+            System.out.println("-----------------------------------------END---------------------------------------\n");*/
 
             System.out.println("-------------START WITH RUIN PROBABILITY-------------");
             for (User proposedUser : server.getPropostedUsers()){

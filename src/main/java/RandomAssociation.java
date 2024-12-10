@@ -28,7 +28,7 @@ public class RandomAssociation extends Association{
 
             System.out.println("----------------------------CALCULATE TRANSMISSION TIME----------------------------");
             for (User proposedUser : server.getPropostedUsers()) {
-                double transmissionTime_value = elaboration.calculateTransmissionTime(proposedUser, server, elaboration.getSNR_list());
+                double transmissionTime_value = elaboration.calculateTransmissionTime(proposedUser, server, 1);
                 System.out.println(proposedUser + " " + server + " Transmition time: " + transmissionTime_value);
             }
             System.out.println("-----------------------------------------END---------------------------------------\n");
