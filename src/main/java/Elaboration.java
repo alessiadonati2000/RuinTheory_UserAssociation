@@ -4,7 +4,8 @@ public class Elaboration {
     private List<Match> snr_list;
     private List<Match> transmissionTime_listAlgoritm;
     private List<Match> transmissionTime_listRandom;
-    private List<Match> computingTime_list;
+    private List<Match> computationTime_listAlgoritm;
+    private List<Match> computationTime_listRandom;
 
     final double bandwidth;
 
@@ -12,6 +13,8 @@ public class Elaboration {
         this.snr_list = new ArrayList<>();
         this.transmissionTime_listAlgoritm = new ArrayList<>();
         this.transmissionTime_listRandom = new ArrayList<>();
+        this.computationTime_listAlgoritm = new ArrayList<>();
+        this.computationTime_listRandom = new ArrayList<>();
         this.bandwidth = 20 * Math.pow(10, 6);
     }
 
@@ -56,7 +59,6 @@ public class Elaboration {
         } else if (flag == 1) {
             transmissionTime_listRandom.add(new Match(user, server, transmissionTime_value));
         }
-
 
         return transmissionTime_value;
     }
@@ -114,6 +116,61 @@ public class Elaboration {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public double calculateComputationTime(User user, Server server, int flag) {
+        double computationTime_value = 0.0;
+        computationTime_value = (server.CPU_CYCLExBIT * user.getTask()) / server.COMPUTING_CAPACITY;
+
+        if (flag == 0) {
+            computationTime_listAlgoritm.add(new Match(user, server, computationTime_value));
+        } else if (flag == 1) {
+            computationTime_listRandom.add(new Match(user, server, computationTime_value));
+        }
+
+        return computationTime_value;
+    }
+
+    public List<Match> getComputationTime_listAlgoritm(){
+        return computationTime_listAlgoritm;
+    }
+
+    public List<Match> getComputationTime_listRandom(){
+        return computationTime_listRandom;
+    }
+
+    public void printComputationTimeListAlgoritm() {
+        for (int i = 0; i < getComputationTime_listAlgoritm().size(); i++) {
+            System.out.println(computationTime_listAlgoritm.get(i).getUser() + " " + computationTime_listAlgoritm.get(i).getServer() + " Computation Time: " + computationTime_listAlgoritm.get(i).getValue());
+        }
+    }
+
+    public void printComputationTimeListRandom() {
+        for (int i = 0; i < getComputationTime_listRandom().size(); i++) {
+            System.out.println(computationTime_listRandom.get(i).getUser() + " " + computationTime_listRandom.get(i).getServer() + " Computation Time: " + computationTime_listRandom.get(i).getValue());
+        }
+    }
+
+    public double calculateMeanComputationTime(Server server, int flag) {
+        double meanComputationTime = 0.0;
+        double sum = 0.0;
+        if (flag == 0){
+            for (int i = 0; i < getComputationTime_listAlgoritm().size(); i++) {
+                if(getComputationTime_listAlgoritm().get(i).getServer().getBuffer() == server.getBuffer()) {
+                    sum += getComputationTime_listAlgoritm().get(i).getValue();
+                    meanComputationTime = sum / server.getPropostedUsers().size();
+                }
+            }
+        } else if (flag == 1) {
+            for (int i = 0; i < getComputationTime_listRandom().size(); i++) {
+                if(getComputationTime_listRandom().get(i).getServer().getBuffer() == server.getBuffer()) {
+                    sum += getComputationTime_listRandom().get(i).getValue();
+                    meanComputationTime = sum / server.getPropostedUsers().size();
+                }
+            }
+        }
+        return meanComputationTime;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     static int fattoriale(int j) {
         if (j == 0 || j == 1) {
             return 1;
@@ -157,30 +214,4 @@ public class Elaboration {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    private double calculateComputationTime(User user, Server server) {
-        double computationTime = 0.0;
-        computationTime = (server.CPU_CYCLExBIT * user.getTask()) / server.COMPUTING_CAPACITY;
-        return computationTime;
-    }
-
-    public Map<User, Double> associateUserComputingTime(User user, Server server) {
-        Map<User, Double> computingTimeMap = new HashMap<>();
-        double computationTime = calculateComputationTime(user, server);
-        computingTimeMap.put(user, computationTime);
-        return computingTimeMap;
-    }
-
-    /*public Map<User, Double> associateUserTotalSystemTime(User user, Server server) {
-        Map<User, Double> totalSystemTimeMap = new HashMap<>();
-        double totalSystemTime = calculateComputationTime(user, server) + getTransmissionTime_value(user, server);
-        totalSystemTimeMap.put(user, totalSystemTime);
-        return totalSystemTimeMap;
-    }*/
-
-    /*public List<User> buildPriorityListTotalTime(Server server) {
-        server.getPropostedUsers().sort(Comparator.comparing(user -> associateUserTotalSystemTime(user, server).get(user)));
-        List<User> priorityList = server.getPropostedUsers();
-        return priorityList;
-    }*/
 }

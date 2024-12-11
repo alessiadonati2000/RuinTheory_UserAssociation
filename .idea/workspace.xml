@@ -11,8 +11,6 @@
       <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/RandomAssociation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/RandomAssociation.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Server.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Server.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/TimeAssociation.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/User.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,7 +93,9 @@
       <workItem from="1733743623454" duration="876000" />
       <workItem from="1733777325988" duration="4225000" />
       <workItem from="1733833204040" duration="3453000" />
-      <workItem from="1733840624593" duration="2857000" />
+      <workItem from="1733840624593" duration="2941000" />
+      <workItem from="1733901454933" duration="873000" />
+      <workItem from="1733937445028" duration="1903000" />
     </task>
     <servers />
   </component>
