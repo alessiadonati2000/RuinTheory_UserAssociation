@@ -5,16 +5,17 @@ import java.util.Objects;
 public class Server {
     private double buffer;
     private double originalBuffer;
+    private List<User> proposedUsers;
+
     final double COMPUTING_CAPACITY = 6 * Math.pow(10, 5);
     final int CPU_CYCLExBIT = 10;
-    private List<User> propostedUsers;
 
     public Server() {}
 
     public Server(double buffer) {
         this.buffer = buffer;
         this.originalBuffer = buffer;
-        this.propostedUsers = new ArrayList<User>();
+        this.proposedUsers = new ArrayList<User>();
     }
 
     public double getBuffer() {
@@ -25,8 +26,8 @@ public class Server {
         return originalBuffer;
     }
 
-    public List<User> getPropostedUsers() {
-        return propostedUsers;
+    public List<User> getProposedUsers() {
+        return proposedUsers;
     }
 
     public double calculateBuffer(double min, double max){
@@ -57,12 +58,6 @@ public class Server {
     @Override
     public String toString() {
         return "Server (Buffer: " + (int) buffer + ")";
-    }
-
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(buffer);
     }
 
 }

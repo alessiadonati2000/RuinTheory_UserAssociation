@@ -43,9 +43,5 @@ public class User {
         return "User (Task: " + (int) task + ")";
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(task);
-    }
 
 }

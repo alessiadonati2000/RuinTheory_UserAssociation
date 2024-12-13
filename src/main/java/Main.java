@@ -3,17 +3,21 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) {
-        int numSimulations = 50;
-        int maxUser = 300;
+        int numSimulations = 1;
+        int maxUser = 80;
         int step = 5;
         int[] meanAssociatedUsersAlgoritm = new int[maxUser/step +1]; //fine-inizio / passo
         int[] meanAssociatedUsersRandom = new int[maxUser/step +1];
+        int[] meanUnusedResourcesAlgoritm = new int[maxUser/step +1];
+        int[] meanUnusedResourcesRandom = new int[maxUser/step +1];
 
         int j = 0;
 
-        for (int numUsers = 0; numUsers <= maxUser; numUsers += step){
+        for (int numUsers = 80; numUsers <= maxUser; numUsers += step){
             int sumAssociatedUsersAlgoritm = 0;
             int sumAssociatedUsersRandom = 0;
+            double sumUnusedResourcesAlgoritm = 0.0;
+            double sumUnusedResourcesRandom = 0.0;
 
             for(int i = 0; i < numSimulations; i++) {
                 Elaboration elaboration = new Elaboration();
@@ -35,10 +39,12 @@ public class Main {
                 System.out.println("---------------------ASSOCIATION WITH ALGORITM---------------------\n");
                 AlgoritmAssociation algoritmAssociation = new AlgoritmAssociation(users, servers, elaboration);
                 algoritmAssociation.associationUserServer(users, servers);
+                sumUnusedResourcesAlgoritm += algoritmAssociation.getTotalUnusedBuffer();
 
                 System.out.println("----------------------ASSOCIATION WITH RANDOM-----------------------\n");
                 RandomAssociation randomAssociation = new RandomAssociation(usersRandom, serversRandom, algoritmAssociation.elaboration);
                 randomAssociation.randomAssociation(usersRandom, serversRandom);
+                sumUnusedResourcesRandom += randomAssociation.getTotalUnusedBuffer();
 
                 double meanTransmissionTime = 0.0;
                 double meanComputationTime = 0.0;
@@ -65,11 +71,18 @@ public class Main {
 
             meanAssociatedUsersAlgoritm[j] = sumAssociatedUsersAlgoritm / numSimulations;
             meanAssociatedUsersRandom[j] = sumAssociatedUsersRandom / numSimulations;
+            meanUnusedResourcesAlgoritm[j] = (int) (sumUnusedResourcesAlgoritm / numSimulations);
+            meanUnusedResourcesRandom[j] = (int) (sumUnusedResourcesRandom / numSimulations);
             j++;
         }
 
+        System.out.println("Number of associated users");
         System.out.println("Algoritm: " + Arrays.toString(meanAssociatedUsersAlgoritm));
         System.out.println("Random: " + Arrays.toString(meanAssociatedUsersRandom));
+
+        System.out.println("Number of unused resources");
+        System.out.println("Algoritm: " + Arrays.toString(meanUnusedResourcesAlgoritm));
+        System.out.println("Random: " + Arrays.toString(meanUnusedResourcesRandom));
 
     }
 

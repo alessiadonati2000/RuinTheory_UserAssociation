@@ -6,7 +6,6 @@ public class Elaboration {
     private List<Match> transmissionTime_listRandom;
     private List<Match> computationTime_listAlgoritm;
     private List<Match> computationTime_listRandom;
-
     final double bandwidth;
 
     public Elaboration() {
@@ -51,7 +50,7 @@ public class Elaboration {
         double transmissionTime_value = 0.0;
         double uplinkDataRate = 0.0;
 
-        uplinkDataRate = (bandwidth / server.getPropostedUsers().size()) * (Math.log(1 + getSNR_value(user, server)) / Math.log(2));
+        uplinkDataRate = (bandwidth / server.getProposedUsers().size()) * (Math.log(1 + getSNR_value(user, server)) / Math.log(2));
         transmissionTime_value = user.getTask() / uplinkDataRate;
 
         if (flag == 0) {
@@ -101,14 +100,14 @@ public class Elaboration {
             for (int i = 0; i < getTransmissionTime_listAlgoritm().size(); i++) {
                 if(getTransmissionTime_listAlgoritm().get(i).getServer().getBuffer() == server.getBuffer()) {
                     sum += getTransmissionTime_listAlgoritm().get(i).getValue();
-                    meanTransmissionTime = sum / server.getPropostedUsers().size();
+                    meanTransmissionTime = sum / server.getProposedUsers().size();
                 }
             }
         } else if (flag == 1) {
             for (int i = 0; i < getTransmissionTime_listRandom().size(); i++) {
                 if(getTransmissionTime_listRandom().get(i).getServer().getBuffer() == server.getBuffer()) {
                     sum += getTransmissionTime_listRandom().get(i).getValue();
-                    meanTransmissionTime = sum / server.getPropostedUsers().size();
+                    meanTransmissionTime = sum / server.getProposedUsers().size();
                 }
             }
         }
@@ -156,14 +155,14 @@ public class Elaboration {
             for (int i = 0; i < getComputationTime_listAlgoritm().size(); i++) {
                 if(getComputationTime_listAlgoritm().get(i).getServer().getBuffer() == server.getBuffer()) {
                     sum += getComputationTime_listAlgoritm().get(i).getValue();
-                    meanComputationTime = sum / server.getPropostedUsers().size();
+                    meanComputationTime = sum / server.getProposedUsers().size();
                 }
             }
         } else if (flag == 1) {
             for (int i = 0; i < getComputationTime_listRandom().size(); i++) {
                 if(getComputationTime_listRandom().get(i).getServer().getBuffer() == server.getBuffer()) {
                     sum += getComputationTime_listRandom().get(i).getValue();
-                    meanComputationTime = sum / server.getPropostedUsers().size();
+                    meanComputationTime = sum / server.getProposedUsers().size();
                 }
             }
         }
@@ -183,7 +182,7 @@ public class Elaboration {
         double ruinProbability = 0.0;
 
         double sumTask = 0;
-        for (User _user : server.getPropostedUsers()){
+        for (User _user : server.getProposedUsers()){
             sumTask += _user.getTask();
         }
 
@@ -208,8 +207,8 @@ public class Elaboration {
     }
 
     public List<User> buildPriorityList(Server server) {
-        server.getPropostedUsers().sort(Comparator.comparing(user -> associateUserRuinDegree(user, server).get(user)));
-        List<User> priorityList = server.getPropostedUsers();
+        server.getProposedUsers().sort(Comparator.comparing(user -> associateUserRuinDegree(user, server).get(user)));
+        List<User> priorityList = server.getProposedUsers();
         return priorityList;
     }
 
