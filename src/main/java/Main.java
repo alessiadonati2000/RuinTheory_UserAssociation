@@ -3,8 +3,8 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) {
-        int numSimulations = 1;
-        int maxUser = 80;
+        int numSimulations = 500;
+        int maxUser = 300;
         int step = 5;
         int[] meanAssociatedUsersAlgoritm = new int[maxUser/step +1]; //fine-inizio / passo
         int[] meanAssociatedUsersRandom = new int[maxUser/step +1];
@@ -13,7 +13,7 @@ public class Main {
 
         int j = 0;
 
-        for (int numUsers = 80; numUsers <= maxUser; numUsers += step){
+        for (int numUsers = 0; numUsers <= maxUser; numUsers += step){
             int sumAssociatedUsersAlgoritm = 0;
             int sumAssociatedUsersRandom = 0;
             double sumUnusedResourcesAlgoritm = 0.0;
@@ -76,10 +76,13 @@ public class Main {
             j++;
         }
 
+        // OK: l'algoritmo associa più utenti rispetto al randomico
         System.out.println("Number of associated users");
         System.out.println("Algoritm: " + Arrays.toString(meanAssociatedUsersAlgoritm));
         System.out.println("Random: " + Arrays.toString(meanAssociatedUsersRandom));
 
+        // QUASI: in generale l'algoritmo alloca più risorse del randomico, tranne tra 80 e 130 dove il randomico ottimizza meglio le risorse
+        // questo perchè magari il randomico alloca utenti più con task più grande subito, mentre con l'algoritmo vengono lasciati alla fine
         System.out.println("Number of unused resources");
         System.out.println("Algoritm: " + Arrays.toString(meanUnusedResourcesAlgoritm));
         System.out.println("Random: " + Arrays.toString(meanUnusedResourcesRandom));

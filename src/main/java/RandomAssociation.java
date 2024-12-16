@@ -54,6 +54,7 @@ public class RandomAssociation extends Association{
 
                 } else {
                     System.out.println("ERROR: BUFFER EXAUSTED");
+                    break;
                 }
             }
             System.out.print("//////////////////////////////////////////////////////////////////\n");
