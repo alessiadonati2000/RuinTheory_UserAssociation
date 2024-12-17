@@ -100,15 +100,16 @@ public class Elaboration {
             for (int i = 0; i < getTransmissionTime_listAlgoritm().size(); i++) {
                 if(getTransmissionTime_listAlgoritm().get(i).getServer().getBuffer() == server.getBuffer()) {
                     sum += getTransmissionTime_listAlgoritm().get(i).getValue();
-                    meanTransmissionTime = sum / server.getProposedUsers().size();
                 }
+                meanTransmissionTime = sum / server.getProposedUsers().size();
             }
         } else if (flag == 1) {
             for (int i = 0; i < getTransmissionTime_listRandom().size(); i++) {
                 if(getTransmissionTime_listRandom().get(i).getServer().getBuffer() == server.getBuffer()) {
                     sum += getTransmissionTime_listRandom().get(i).getValue();
-                    meanTransmissionTime = sum / server.getProposedUsers().size();
+
                 }
+                meanTransmissionTime = sum / server.getProposedUsers().size();
             }
         }
         return meanTransmissionTime;
