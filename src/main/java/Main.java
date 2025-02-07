@@ -3,7 +3,7 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) {
-        int numSimulations = 2;
+        int numSimulations = 1;
         int numServer = 3;
         int maxUser = 5;
         int step = 5;
@@ -11,21 +11,23 @@ public class Main {
         int[] meanAssociatedUsersRandom = new int[maxUser/step +1];
         int[] meanUnusedResourcesAlgoritm = new int[maxUser/step +1];
         int[] meanUnusedResourcesRandom = new int[maxUser/step +1];
-        List<double[]> meanTimeTransmissionTimeAlgoritm = new ArrayList<>();
+        int index = 0;
 
-        int j = 0;
-
+        // Voglio simulare in una unica run i vari risultati al variare del numero di utenti
+        // andrò a provare di 5 in 5 -> 5, 10, 15, 20, 25...
         for (int numUsers = 5; numUsers <= maxUser; numUsers += step){
+
             int sumAssociatedUsersAlgoritm = 0;
             int sumAssociatedUsersRandom = 0;
             double sumUnusedResourcesAlgoritm = 0.0;
             double sumUnusedResourcesRandom = 0.0;
-            double[] sumMeanTransmissionTimeAlgoritm = new double[numServer];
-            double[] sumMeanTransmissionTimeRandom = new double[numServer];
 
+            // I risultati saranno la media su un elevato numero di simulazioni per normalizzare il dato
             for(int i = 0; i < numSimulations; i++) {
+
                 Elaboration elaboration = new Elaboration();
 
+                // Generate users
                 User user = new User();
                 List<User> users = user.generateUsers(numUsers,900, 10000, 0.2, 0.1);
                 List<User> usersRandom = deepCopyUser(users);
@@ -33,6 +35,7 @@ public class Main {
                     System.out.println(u);
                 }
 
+                // Generate servers
                 Server server = new Server();
                 List<Server> servers = server.generateServers(numServer, 140000,150000);
                 List<Server> serversRandom = deepCopyServer(servers);
@@ -43,8 +46,8 @@ public class Main {
                 System.out.println("---------------------ASSOCIATION WITH ALGORITM---------------------\n");
                 AlgoritmAssociation algoritmAssociation = new AlgoritmAssociation(users, servers, elaboration);
                 algoritmAssociation.associationUserServer(users, servers);
-                sumAssociatedUsersAlgoritm += algoritmAssociation.getTotalNumberAssociatedUsers();
-                sumUnusedResourcesAlgoritm += algoritmAssociation.getTotalUnusedBuffer();
+                sumAssociatedUsersAlgoritm += algoritmAssociation.getTotalNumberAssociatedUsers();      // sum the number ho associated users
+                sumUnusedResourcesAlgoritm += algoritmAssociation.getTotalUnusedBuffer();               // sum the total unused buffer
 
                 System.out.println("----------------------ASSOCIATION WITH RANDOM-----------------------\n");
                 RandomAssociation randomAssociation = new RandomAssociation(usersRandom, serversRandom, algoritmAssociation.elaboration);
@@ -52,35 +55,19 @@ public class Main {
                 sumAssociatedUsersRandom += randomAssociation.getTotalNumberAssociatedUsers();
                 sumUnusedResourcesRandom += randomAssociation.getTotalUnusedBuffer();
 
-                int a = 0;
-                for(Server s : servers){
-                    //per ogni server, calcolo la somma dei tempi di trasmissione per ciascun server -> vettore di 3 elementi, dove un elementi è la somma dei tempi
-                    sumMeanTransmissionTimeAlgoritm[a] += elaboration.calculateMeanTransmissionTime(s,0);
-                    a++;
-                    //sumMeanComputationTimeAlgoritm += elaboration.calculateMeanComputationTime(s,0);
-                }
-
-                int r = 0;
-                for(Server s : serversRandom){
-                    sumMeanTransmissionTimeRandom[r] += elaboration.calculateMeanTransmissionTime(s,1);
-                    r++;
-                    //sumMeanComputationTimeRandom += elaboration.calculateMeanComputationTime(s,1);
-                }
-            }
-
-            for(int a = 0; a < numServer; a++){
-                sumMeanTransmissionTimeAlgoritm[a] = sumMeanTransmissionTimeAlgoritm[a] / numSimulations;
-            }
-            meanTimeTransmissionTimeAlgoritm.add(sumMeanTransmissionTimeAlgoritm);
+            } // FINE SIMULAZIONI
 
             // Trovo il numero medio di utenti associati per tot utenti
-            meanAssociatedUsersAlgoritm[j] = sumAssociatedUsersAlgoritm / numSimulations;
-            meanAssociatedUsersRandom[j] = sumAssociatedUsersRandom / numSimulations;
+            meanAssociatedUsersAlgoritm[index] = sumAssociatedUsersAlgoritm / numSimulations;
+            meanAssociatedUsersRandom[index] = sumAssociatedUsersRandom / numSimulations;
+
             // Trovo le risorse non utilizzate per tot utenti
-            meanUnusedResourcesAlgoritm[j] = (int) (sumUnusedResourcesAlgoritm / numSimulations);
-            meanUnusedResourcesRandom[j] = (int) (sumUnusedResourcesRandom / numSimulations);
-            j++;
-        }
+            meanUnusedResourcesAlgoritm[index] = (int) (sumUnusedResourcesAlgoritm / numSimulations);
+            meanUnusedResourcesRandom[index] = (int) (sumUnusedResourcesRandom / numSimulations);
+
+            index++;
+
+        } // FINE CALCOLO CON TOT NUMUSER
 
         // OK: l'algoritmo associa più utenti rispetto al randomico
         System.out.println("Number of associated users");
@@ -92,11 +79,6 @@ public class Main {
         System.out.println("Number of unused resources");
         System.out.println("Algoritm: " + Arrays.toString(meanUnusedResourcesAlgoritm));
         System.out.println("Random: " + Arrays.toString(meanUnusedResourcesRandom));
-
-        System.out.println("Mean Time transmission per server");
-        for (double[] set : meanTimeTransmissionTimeAlgoritm){
-            System.out.println(Arrays.toString(set));
-        }
 
     }
 
