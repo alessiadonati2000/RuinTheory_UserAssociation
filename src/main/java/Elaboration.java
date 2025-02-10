@@ -6,7 +6,9 @@ public class Elaboration {
     private List<Match> transmissionTime_listRandom;
     private List<Match> computationTime_listAlgoritm;
     private List<Match> computationTime_listRandom;
-    final double bandwidth;
+    private List<Match> localComputationTime_listAlgoritm;
+    private List<Match> localComputationTime_listRandom;
+    final double BANDWIDTH = 20 * Math.pow(10, 6);
 
     public Elaboration() {
         this.snr_list = new ArrayList<>();
@@ -14,7 +16,8 @@ public class Elaboration {
         this.transmissionTime_listRandom = new ArrayList<>();
         this.computationTime_listAlgoritm = new ArrayList<>();
         this.computationTime_listRandom = new ArrayList<>();
-        this.bandwidth = 20 * Math.pow(10, 6);
+        this.localComputationTime_listAlgoritm = new ArrayList<>();
+        this.localComputationTime_listRandom = new ArrayList<>();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,7 +53,7 @@ public class Elaboration {
         double transmissionTime_value = 0.0;
         double uplinkDataRate = 0.0;
 
-        uplinkDataRate = (bandwidth / server.getProposedUsers().size()) * (Math.log(1 + getSNR_value(user, server)) / Math.log(2));
+        uplinkDataRate = (BANDWIDTH / server.getProposedUsers().size()) * (Math.log(1 + getSNR_value(user, server)) / Math.log(2));
         transmissionTime_value = user.getTask() / uplinkDataRate;
 
         if (flag == 0) {
@@ -171,13 +174,47 @@ public class Elaboration {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    static int fattoriale(int j) {
+    public double calculateLocalComputationTime(User user, Server server, int flag){
+        double localComputationTime_value = 0.0;
+        localComputationTime_value = (server.CPU_CYCLExBIT * user.getTask()) / user.LOCAL_COMPUTING_CAPACITY;
+
+        if (flag == 0) {
+            localComputationTime_listAlgoritm.add(new Match(user, server, localComputationTime_value));
+        } else if (flag == 1) {
+            localComputationTime_listRandom.add(new Match(user, server, localComputationTime_value));
+        }
+
+        return localComputationTime_value;
+    }
+
+    public List<Match> getLocalComputationTime_listAlgoritm(){
+        return localComputationTime_listAlgoritm;
+    }
+
+    public List<Match> getLocalComputationTime_listRandom(){
+        return localComputationTime_listRandom;
+    }
+
+    public void printLocalComputationTimeListAlgoritm() {
+        for (int i = 0; i < getLocalComputationTime_listAlgoritm().size(); i++) {
+            System.out.println(localComputationTime_listAlgoritm.get(i).getUser() + " " + localComputationTime_listAlgoritm.get(i).getServer() + " Local Computation Time: " + localComputationTime_listAlgoritm.get(i).getValue());
+        }
+    }
+
+    public void printLocalComputationTimeListRandom() {
+        for (int i = 0; i < getLocalComputationTime_listRandom().size(); i++) {
+            System.out.println(localComputationTime_listRandom.get(i).getUser() + " " + localComputationTime_listRandom.get(i).getServer() + " Local Computation Time: " + localComputationTime_listRandom.get(i).getValue());
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /*static int fattoriale(int j) {
         if (j == 0 || j == 1) {
             return 1;
         } else {
             return (j * fattoriale(j - 1));
         }
-    }
+    }*/
 
     private double calculateRuinProbability(Server server, double time) {
         double ruinProbability = 0.0;

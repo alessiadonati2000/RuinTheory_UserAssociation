@@ -10,6 +10,8 @@ public class Server {
     final double COMPUTING_CAPACITY = 6 * Math.pow(10, 5);
     final int CPU_CYCLExBIT = 10;
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     public Server() {}
 
     public Server(double buffer) {
@@ -20,6 +22,18 @@ public class Server {
 
     public double getBuffer() {
         return buffer;
+    }
+
+    public void setBuffer(double buffer) {
+        this.buffer = buffer;
+    }
+
+    public void reduceBuffer(double task) {
+        if (this.buffer >= task) {
+            this.buffer -= task;
+        } else {
+            System.out.printf("Buffer's server cannot support this task");
+        }
     }
 
     public double getOriginalBuffer() {
@@ -41,18 +55,6 @@ public class Server {
             servers.add(server);
         }
         return servers;
-    }
-
-    public void reduceBuffer(double task) {
-        if (this.buffer >= task) {
-            this.buffer -= task;
-        } else {
-            System.out.printf("Buffer's server cannot support this task");
-        }
-    }
-
-    public void setBuffer(double buffer) {
-        this.buffer = buffer;
     }
 
     @Override

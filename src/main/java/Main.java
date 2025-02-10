@@ -55,6 +55,7 @@ public class Main {
                 sumAssociatedUsersRandom += randomAssociation.getTotalNumberAssociatedUsers();
                 sumUnusedResourcesRandom += randomAssociation.getTotalUnusedBuffer();
 
+
             } // FINE SIMULAZIONI
 
             // Trovo il numero medio di utenti associati per tot utenti

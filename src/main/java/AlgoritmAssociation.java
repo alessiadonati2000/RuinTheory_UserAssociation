@@ -42,6 +42,13 @@ public class AlgoritmAssociation extends Association{
             }
             System.out.println("-----------------------------------------END---------------------------------------\n");
 
+            System.out.println("----------------------------CALCULATE LOCAL COMPUTING TIME----------------------------");
+            for (User proposedUser : server.getProposedUsers()) {
+                double localComputationTime_value = elaboration.calculateLocalComputationTime(proposedUser, server, 0);
+                System.out.println(proposedUser + " " + server + " Local Computation time: " + localComputationTime_value);
+            }
+            System.out.println("-----------------------------------------END---------------------------------------\n");
+
             System.out.println("-------------START WITH RUIN PROBABILITY-------------");
             for (User proposedUser : server.getProposedUsers()){
                 Map<User, Double> ruinDegreeMap = elaboration.associateUserRuinDegree(proposedUser, server);

@@ -42,6 +42,13 @@ public class RandomAssociation extends Association{
             }
             System.out.println("-----------------------------------------END---------------------------------------\n");
 
+            System.out.println("----------------------------CALCULATE LOCAL COMPUTING TIME----------------------------");
+            for (User proposedUser : server.getProposedUsers()) {
+                double localComputationTime_value = elaboration.calculateLocalComputationTime(proposedUser, server, 1);
+                System.out.println(proposedUser + " " + server + " Local Computation time: " + localComputationTime_value);
+            }
+            System.out.println("-----------------------------------------END---------------------------------------\n");
+
             System.out.println("START ASSOCIATION TASK-BUFFER");
             for (User user : server.getProposedUsers()) {
                 System.out.println(user);
@@ -72,7 +79,7 @@ public class RandomAssociation extends Association{
     private Server chooseRandomServer(User user) {
         Random rand = new Random();
         Server randomServer = servers.get(rand.nextInt(servers.size()));
-        System.out.println("User " + user + "choose: " + randomServer);
+        System.out.println(user + "choose: " + randomServer);
         return randomServer;
     }
 
