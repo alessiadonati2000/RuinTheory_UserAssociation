@@ -3,9 +3,9 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) {
-        int numSimulations = 1;
+        int numSimulations = 500;
         int numServer = 3;
-        int maxUser = 5;
+        int maxUser = 300;
         int step = 5;
         int[] meanAssociatedUsersAlgoritm = new int[maxUser/step +1]; //fine-inizio / passo
         int[] meanAssociatedUsersRandom = new int[maxUser/step +1];
@@ -17,7 +17,7 @@ public class Main {
 
         // Voglio simulare in una unica run i vari risultati al variare del numero di utenti
         // andrò a provare di 5 in 5 -> 5, 10, 15, 20, 25...
-        for (int numUsers = 5; numUsers <= maxUser; numUsers += step){
+        for (int numUsers = 0; numUsers <= maxUser; numUsers += step){
 
             int sumAssociatedUsersAlgoritm = 0;
             int sumAssociatedUsersRandom = 0;

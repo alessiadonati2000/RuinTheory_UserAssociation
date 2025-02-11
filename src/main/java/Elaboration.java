@@ -68,8 +68,8 @@ public class Elaboration {
     public double getList_value(User user, Server server, List<Match> list) {
         for (Match match : list) {
             double userMatchTask = match.getUser().getTask();
-            double serverMatchBuffer = match.getServer().getBuffer();
-            if((int) userMatchTask == (int) user.getTask() && (int) serverMatchBuffer == (int) server.getBuffer()) {
+            double serverMatchBuffer = match.getServer().getOriginalBuffer();
+            if((int) userMatchTask == (int) user.getTask() && (int) serverMatchBuffer == (int) server.getOriginalBuffer()) {
                 return match.getValue();
             }
         }
@@ -245,9 +245,12 @@ public class Elaboration {
     }
 
     public List<User> buildPriorityList(Server server) {
-        server.getProposedUsers().sort(Comparator.comparing(user -> associateUserRuinDegree(user, server).get(user)));
-        List<User> priorityList = server.getProposedUsers();
-        return priorityList;
+        server.getProposedUsers().sort(Comparator.comparing(user -> {
+            double ruinDegree = associateUserRuinDegree(user, server).get(user);
+            double taskSize = user.getTask();
+            return ruinDegree * taskSize;  // Pesa il ruin degree in base al task
+        }));
+        return server.getProposedUsers();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
