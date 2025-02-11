@@ -11,6 +11,8 @@ public class Main {
         int[] meanAssociatedUsersRandom = new int[maxUser/step +1];
         int[] meanUnusedResourcesAlgoritm = new int[maxUser/step +1];
         int[] meanUnusedResourcesRandom = new int[maxUser/step +1];
+        double[] meanTotalSystemTimeAlgoritm = new double[maxUser/step +1];
+        double[] meanTotalSystemTimeRandom = new double[maxUser/step +1];
         int index = 0;
 
         // Voglio simulare in una unica run i vari risultati al variare del numero di utenti
@@ -21,6 +23,8 @@ public class Main {
             int sumAssociatedUsersRandom = 0;
             double sumUnusedResourcesAlgoritm = 0.0;
             double sumUnusedResourcesRandom = 0.0;
+            double sumTotalSystemTimeAlgoritm = 0.0;
+            double sumTotalSystemTimeRandom = 0.0;
 
             // I risultati saranno la media su un elevato numero di simulazioni per normalizzare il dato
             for(int i = 0; i < numSimulations; i++) {
@@ -48,13 +52,16 @@ public class Main {
                 algoritmAssociation.associationUserServer(users, servers);
                 sumAssociatedUsersAlgoritm += algoritmAssociation.getTotalNumberAssociatedUsers();      // sum the number ho associated users
                 sumUnusedResourcesAlgoritm += algoritmAssociation.getTotalUnusedBuffer();               // sum the total unused buffer
+                sumTotalSystemTimeAlgoritm += algoritmAssociation.getTotalSystemTime();
+                algoritmAssociation.printAM();
 
                 System.out.println("----------------------ASSOCIATION WITH RANDOM-----------------------\n");
                 RandomAssociation randomAssociation = new RandomAssociation(usersRandom, serversRandom, algoritmAssociation.elaboration);
                 randomAssociation.randomAssociation(usersRandom, serversRandom);
                 sumAssociatedUsersRandom += randomAssociation.getTotalNumberAssociatedUsers();
                 sumUnusedResourcesRandom += randomAssociation.getTotalUnusedBuffer();
-
+                sumTotalSystemTimeRandom += randomAssociation.getTotalSystemTime();
+                randomAssociation.printAM();
 
             } // FINE SIMULAZIONI
 
@@ -65,6 +72,9 @@ public class Main {
             // Trovo le risorse non utilizzate per tot utenti
             meanUnusedResourcesAlgoritm[index] = (int) (sumUnusedResourcesAlgoritm / numSimulations);
             meanUnusedResourcesRandom[index] = (int) (sumUnusedResourcesRandom / numSimulations);
+
+            meanTotalSystemTimeAlgoritm[index] = sumTotalSystemTimeAlgoritm / numSimulations;
+            meanTotalSystemTimeRandom[index] = sumTotalSystemTimeRandom / numSimulations;
 
             index++;
 
@@ -80,6 +90,10 @@ public class Main {
         System.out.println("Number of unused resources");
         System.out.println("Algoritm: " + Arrays.toString(meanUnusedResourcesAlgoritm));
         System.out.println("Random: " + Arrays.toString(meanUnusedResourcesRandom));
+
+        System.out.println("Total System Time");
+        System.out.println("Algoritm: " + Arrays.toString(meanTotalSystemTimeAlgoritm));
+        System.out.println("Random: " + Arrays.toString(meanTotalSystemTimeRandom));
 
     }
 

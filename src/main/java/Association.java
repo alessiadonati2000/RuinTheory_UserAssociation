@@ -5,6 +5,8 @@ public class Association {
     protected List<Server> servers;
     protected int[][] associationMatrix;
     protected Elaboration elaboration;
+    protected double totalUnusedBuffer;
+    protected double totalSystemTime;
 
     public Association() {}
 
@@ -24,7 +26,8 @@ public class Association {
 
     public void printAM() {
         for (int i = 0; i < users.size(); i++) {
-            System.out.println("User: " + i);
+            User user = users.get(i);
+            System.out.println(user);
             for (int j = 0; j < servers.size(); j++) {
                 System.out.print(associationMatrix[i][j] + "\t");
             }
@@ -53,5 +56,13 @@ public class Association {
             }
         }
         return numAssociatedUsers;
+    }
+
+    public double getTotalUnusedBuffer() {
+        return totalUnusedBuffer;
+    }
+
+    public double getTotalSystemTime() {
+        return totalSystemTime;
     }
 }

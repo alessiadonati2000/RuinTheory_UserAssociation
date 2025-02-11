@@ -65,8 +65,8 @@ public class Elaboration {
         return transmissionTime_value;
     }
 
-    public double getTransmissionTime_value(User user, Server server, List<Match> transmissionTime_list) {
-        for (Match match : transmissionTime_list) {
+    public double getList_value(User user, Server server, List<Match> list) {
+        for (Match match : list) {
             double userMatchTask = match.getUser().getTask();
             double serverMatchBuffer = match.getServer().getBuffer();
             if((int) userMatchTask == (int) user.getTask() && (int) serverMatchBuffer == (int) server.getBuffer()) {

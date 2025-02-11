@@ -1,7 +1,6 @@
 import java.util.*;
 
 public class RandomAssociation extends Association{
-    private double totalUnusedBuffer;
 
     public RandomAssociation(List<User> user, List<Server> server, Elaboration elaboration){
         this.users = user;
@@ -9,6 +8,7 @@ public class RandomAssociation extends Association{
         this.associationMatrix = new int[user.size()][server.size()];
         this.elaboration = elaboration;
         this.totalUnusedBuffer = 0.0;
+        this.totalSystemTime = 0.0;
     }
 
     public void randomAssociation(List<User> users, List<Server> servers) {
@@ -52,22 +52,27 @@ public class RandomAssociation extends Association{
             System.out.println("START ASSOCIATION TASK-BUFFER");
             for (User user : server.getProposedUsers()) {
                 System.out.println(user);
+                totalSystemTime += elaboration.getList_value(user, server, elaboration.getTransmissionTime_listRandom());
 
                 if (server.getBuffer() >= user.getTask()) {
                     setValueAM(users.indexOf(user), servers.indexOf(server), 1);
                     server.reduceBuffer(user.getTask());
+                    totalSystemTime += elaboration.getList_value(user, server, elaboration.getComputationTime_listRandom());
 
                     System.out.println("Update buffer: " + (int) server.getBuffer() + "\n");
 
                 } else {
+                    totalSystemTime += elaboration.getList_value(user, server, elaboration.getLocalComputationTime_listRandom());
                     System.out.println("ERROR: BUFFER EXAUSTED");
-                    break;
+                    //break;
                 }
             }
-            System.out.print("//////////////////////////////////////////////////////////////////\n");
-            System.out.println();
 
             totalUnusedBuffer += server.getBuffer();
+            System.out.println("buffer non utilizzato: " + (int) totalUnusedBuffer);
+
+            System.out.print("//////////////////////////////////////////////////////////////////\n");
+            System.out.println();
         }
 
         // Reset dei server
@@ -83,7 +88,4 @@ public class RandomAssociation extends Association{
         return randomServer;
     }
 
-    public double getTotalUnusedBuffer() {
-        return totalUnusedBuffer;
-    }
 }
