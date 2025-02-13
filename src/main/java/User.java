@@ -6,6 +6,7 @@ public class User {
     private double task;
     private double transmissionPower;
     final double LOCAL_COMPUTING_CAPACITY = 7 * Math.pow(10, 4);
+    final int CPU_CYCLExBIT = 10;
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

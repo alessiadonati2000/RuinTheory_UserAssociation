@@ -7,18 +7,17 @@ public class Main {
         int numServer = 3;
         int maxUser = 300;
         int step = 5;
-        int[] meanAssociatedUsersAlgoritm = new int[maxUser/step +1]; //fine-inizio / passo
-        int[] meanAssociatedUsersRandom = new int[maxUser/step +1];
-        int[] meanUnusedResourcesAlgoritm = new int[maxUser/step +1];
-        int[] meanUnusedResourcesRandom = new int[maxUser/step +1];
-        double[] meanTotalSystemTimeAlgoritm = new double[maxUser/step +1];
-        double[] meanTotalSystemTimeRandom = new double[maxUser/step +1];
+        int[] meanAssociatedUsersAlgoritm = new int[maxUser/step + 1];          // Voglio che l'algoritmo associ piu utenti -> migliore
+        int[] meanAssociatedUsersRandom = new int[maxUser/step + 1];
+        int[] meanUnusedResourcesAlgoritm = new int[maxUser/step + 1];          // Voglio che l'algoritmo minimizzi le risorse non utilizzate -> efficienza
+        int[] meanUnusedResourcesRandom = new int[maxUser/step + 1];
+        double[] meanTotalSystemTimeAlgoritm = new double[maxUser/step + 1];    // Voglio che l'algoritmo abbia un tempo totale minore -> velocità
+        double[] meanTotalSystemTimeRandom = new double[maxUser/step + 1];
         int index = 0;
 
         // Voglio simulare in una unica run i vari risultati al variare del numero di utenti
         // andrò a provare di 5 in 5 -> 5, 10, 15, 20, 25...
         for (int numUsers = 0; numUsers <= maxUser; numUsers += step){
-
             int sumAssociatedUsersAlgoritm = 0;
             int sumAssociatedUsersRandom = 0;
             double sumUnusedResourcesAlgoritm = 0.0;
@@ -28,7 +27,6 @@ public class Main {
 
             // I risultati saranno la media su un elevato numero di simulazioni per normalizzare il dato
             for(int i = 0; i < numSimulations; i++) {
-
                 Elaboration elaboration = new Elaboration();
 
                 // Generate users
@@ -47,7 +45,7 @@ public class Main {
                     System.out.println(s);
                 }
 
-                System.out.println("---------------------ASSOCIATION WITH ALGORITM---------------------\n");
+                System.out.println("\n---------------------ASSOCIATION WITH ALGORITM---------------------\n");
                 AlgoritmAssociation algoritmAssociation = new AlgoritmAssociation(users, servers, elaboration);
                 algoritmAssociation.associationUserServer(users, servers);
                 sumAssociatedUsersAlgoritm += algoritmAssociation.getTotalNumberAssociatedUsers();      // sum the number ho associated users
@@ -55,7 +53,7 @@ public class Main {
                 sumTotalSystemTimeAlgoritm += algoritmAssociation.getTotalSystemTime();
                 algoritmAssociation.printAM();
 
-                System.out.println("----------------------ASSOCIATION WITH RANDOM-----------------------\n");
+                System.out.println("\n----------------------ASSOCIATION WITH RANDOM-----------------------\n");
                 RandomAssociation randomAssociation = new RandomAssociation(usersRandom, serversRandom, algoritmAssociation.elaboration);
                 randomAssociation.randomAssociation(usersRandom, serversRandom);
                 sumAssociatedUsersRandom += randomAssociation.getTotalNumberAssociatedUsers();
@@ -87,11 +85,11 @@ public class Main {
 
         // QUASI: in generale l'algoritmo alloca più risorse del randomico, tranne tra 80 e 130 dove il randomico ottimizza meglio le risorse
         // questo perchè magari il randomico alloca utenti più con task più grande subito, mentre con l'algoritmo vengono lasciati alla fine
-        System.out.println("Number of unused resources");
+        System.out.println("\nNumber of unused resources");
         System.out.println("Algoritm: " + Arrays.toString(meanUnusedResourcesAlgoritm));
         System.out.println("Random: " + Arrays.toString(meanUnusedResourcesRandom));
 
-        System.out.println("Total System Time");
+        System.out.println("\nTotal System Time");
         System.out.println("Algoritm: " + Arrays.toString(meanTotalSystemTimeAlgoritm));
         System.out.println("Random: " + Arrays.toString(meanTotalSystemTimeRandom));
 

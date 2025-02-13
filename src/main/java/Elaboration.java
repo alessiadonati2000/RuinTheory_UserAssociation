@@ -20,22 +20,23 @@ public class Elaboration {
         this.localComputationTime_listRandom = new ArrayList<>();
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    public double calculateSNR(User user, Server server) {
-        double snr_value = Math.random()*1500;
-        snr_list.add(new Match(user, server, snr_value));
-        return snr_value;
-    }
-
-    public double getSNR_value(User user, Server server) {
-        for (Match match : getSNR_list()) {
+    public double getList_value(User user, Server server, List<Match> list) {
+        for (Match match : list) {
             double userMatchTask = match.getUser().getTask();
-            double serverMatchBuffer = match.getServer().getBuffer();
-            if((int) userMatchTask == (int) user.getTask() && (int) serverMatchBuffer == (int) server.getBuffer()) {
+            double serverMatchBuffer = match.getServer().getOriginalBuffer();
+            if((int) userMatchTask == (int) user.getTask() && (int) serverMatchBuffer == (int) server.getOriginalBuffer()) {
                 return match.getValue();
             }
         }
         throw new IllegalArgumentException("No corresponding value found");
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public double calculateSNR(User user, Server server) {
+        // Calcolo l'SNR in modo randomico perchè non ho implementato il concetto di distanza tra utenti e server
+        double snr_value = Math.random()*1500;
+        snr_list.add(new Match(user, server, snr_value));
+        return snr_value;
     }
 
     public List<Match> getSNR_list() {
@@ -50,11 +51,8 @@ public class Elaboration {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public double calculateTransmissionTime(User user, Server server, int flag) {
-        double transmissionTime_value = 0.0;
-        double uplinkDataRate = 0.0;
-
-        uplinkDataRate = (BANDWIDTH / server.getProposedUsers().size()) * (Math.log(1 + getSNR_value(user, server)) / Math.log(2));
-        transmissionTime_value = user.getTask() / uplinkDataRate;
+        double uplinkDataRate = (BANDWIDTH / server.getProposedUsers().size()) * (Math.log(1 + getList_value(user, server, snr_list)) / Math.log(2));
+        double transmissionTime_value = user.getTask() / uplinkDataRate;
 
         if (flag == 0) {
             transmissionTime_listAlgoritm.add(new Match(user, server, transmissionTime_value));
@@ -63,17 +61,6 @@ public class Elaboration {
         }
 
         return transmissionTime_value;
-    }
-
-    public double getList_value(User user, Server server, List<Match> list) {
-        for (Match match : list) {
-            double userMatchTask = match.getUser().getTask();
-            double serverMatchBuffer = match.getServer().getOriginalBuffer();
-            if((int) userMatchTask == (int) user.getTask() && (int) serverMatchBuffer == (int) server.getOriginalBuffer()) {
-                return match.getValue();
-            }
-        }
-        throw new IllegalArgumentException("No corresponding value found");
     }
 
     public List<Match> getTransmissionTime_listAlgoritm() {
@@ -96,32 +83,9 @@ public class Elaboration {
         }
     }
 
-    public double calculateMeanTransmissionTime(Server server, int flag) {
-        double meanTransmissionTime = 0.0;
-        double sum = 0.0;
-        if (flag == 0){
-            for (int i = 0; i < getTransmissionTime_listAlgoritm().size(); i++) {
-                if(getTransmissionTime_listAlgoritm().get(i).getServer().getBuffer() == server.getBuffer()) {
-                    sum += getTransmissionTime_listAlgoritm().get(i).getValue();
-                }
-                meanTransmissionTime = sum / server.getProposedUsers().size();
-            }
-        } else if (flag == 1) {
-            for (int i = 0; i < getTransmissionTime_listRandom().size(); i++) {
-                if(getTransmissionTime_listRandom().get(i).getServer().getBuffer() == server.getBuffer()) {
-                    sum += getTransmissionTime_listRandom().get(i).getValue();
-
-                }
-                meanTransmissionTime = sum / server.getProposedUsers().size();
-            }
-        }
-        return meanTransmissionTime;
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public double calculateComputationTime(User user, Server server, int flag) {
-        double computationTime_value = 0.0;
-        computationTime_value = (server.CPU_CYCLExBIT * user.getTask()) / server.COMPUTING_CAPACITY;
+        double computationTime_value = (server.CPU_CYCLExBIT * user.getTask()) / server.COMPUTING_CAPACITY;
 
         if (flag == 0) {
             computationTime_listAlgoritm.add(new Match(user, server, computationTime_value));
@@ -152,31 +116,9 @@ public class Elaboration {
         }
     }
 
-    public double calculateMeanComputationTime(Server server, int flag) {
-        double meanComputationTime = 0.0;
-        double sum = 0.0;
-        if (flag == 0){
-            for (int i = 0; i < getComputationTime_listAlgoritm().size(); i++) {
-                if(getComputationTime_listAlgoritm().get(i).getServer().getBuffer() == server.getBuffer()) {
-                    sum += getComputationTime_listAlgoritm().get(i).getValue();
-                    meanComputationTime = sum / server.getProposedUsers().size();
-                }
-            }
-        } else if (flag == 1) {
-            for (int i = 0; i < getComputationTime_listRandom().size(); i++) {
-                if(getComputationTime_listRandom().get(i).getServer().getBuffer() == server.getBuffer()) {
-                    sum += getComputationTime_listRandom().get(i).getValue();
-                    meanComputationTime = sum / server.getProposedUsers().size();
-                }
-            }
-        }
-        return meanComputationTime;
-    }
-
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     public double calculateLocalComputationTime(User user, Server server, int flag){
-        double localComputationTime_value = 0.0;
-        localComputationTime_value = (server.CPU_CYCLExBIT * user.getTask()) / user.LOCAL_COMPUTING_CAPACITY;
+        double localComputationTime_value = (user.CPU_CYCLExBIT * user.getTask()) / user.LOCAL_COMPUTING_CAPACITY;
 
         if (flag == 0) {
             localComputationTime_listAlgoritm.add(new Match(user, server, localComputationTime_value));
@@ -208,33 +150,20 @@ public class Elaboration {
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /*static int fattoriale(int j) {
-        if (j == 0 || j == 1) {
-            return 1;
-        } else {
-            return (j * fattoriale(j - 1));
-        }
-    }*/
-
     private double calculateRuinProbability(Server server, double time) {
-        double ruinProbability = 0.0;
-
         double sumTask = 0;
         for (User _user : server.getProposedUsers()){
             sumTask += _user.getTask();
         }
 
-        double term = 0.0;
-        term = (server.getBuffer() - sumTask)/( (server.COMPUTING_CAPACITY * time)/ server.CPU_CYCLExBIT );
-        ruinProbability = 1 / (1 + Math.exp(term));
+        double term = (server.getBuffer() - sumTask) / ((server.COMPUTING_CAPACITY * time)/ server.CPU_CYCLExBIT);
+        double ruinProbability = 1 / (1 + Math.exp(term));
 
         return ruinProbability;
     }
 
     private double calculateRuinDegree(User user, Server server){
-        double ruinDegree = 0.0;
-        ruinDegree = user.getTask() / calculateRuinProbability(server, 0.1);
-        return ruinDegree;
+        return user.getTask() / calculateRuinProbability(server, 0.1); //ruin degree
     }
 
     public Map<User, Double> associateUserRuinDegree(User user, Server server) {
@@ -248,7 +177,7 @@ public class Elaboration {
         server.getProposedUsers().sort(Comparator.comparing(user -> {
             double ruinDegree = associateUserRuinDegree(user, server).get(user);
             double taskSize = user.getTask();
-            return ruinDegree * taskSize;  // Pesa il ruin degree in base al task
+            return ruinDegree * taskSize;  // Peso il grado di rovina in base al task
         }));
         return server.getProposedUsers();
     }

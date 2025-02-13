@@ -36,16 +36,6 @@ public class Association {
         System.out.println();
     }
 
-    public List<User> getAssociatedUsers(int serverIndex) {
-        List<User> associated = new ArrayList<>();
-        for (int i = 0; i < users.size(); i++) {
-            if (getValueAM(i, serverIndex) == 1) {
-                associated.add(users.get(i));
-            }
-        }
-        return associated;
-    }
-
     public int getTotalNumberAssociatedUsers() {
         int numAssociatedUsers = 0;
         for (int i = 0; i < users.size(); i++) {

@@ -12,132 +12,91 @@ public class AlgoritmAssociation extends Association{
     }
 
     public void associationUserServer(List<User> users, List<Server> servers) {
+        List<User> unallocatedUsers = new ArrayList<>();
         inizializeAM();
 
-        System.out.println("//////////////////////////////////////////////////////////////////\n");
-        System.out.println("USER PROPOSED TO BEST SERVER FOR HIM\n");
-
-        Map<User, Server> initialAssignments = new HashMap<>();
-
+        System.out.println("----------------USER PROPOSED TO BEST SERVER FOR HIM---------------\n");
         for (User user : users) {
             Server bestServer = chooseBestServer(user);
             if (bestServer != null) {
                 bestServer.getProposedUsers().add(user);
-                initialAssignments.put(user, bestServer);
             }
         }
-        System.out.println("//////////////////////////////////////////////////////////////////\n");
-
-        List<User> unallocatedUsers = new ArrayList<>();
 
         for (Server server : servers) {
-            System.out.println("ELABORATION IN " + server + "\n");
-            System.out.println("List of proposed users:\n" + server.getProposedUsers() + "\n");
+            System.out.println("---------------ELABORATION IN " + server + "\n");
 
-            System.out.println("----------------------------CALCULATE TRANSMISSION TIME----------------------------");
+            // Calcolo per gli utenti proposti i vari parametri
             for (User proposedUser : server.getProposedUsers()) {
-                double transmissionTime_value = elaboration.calculateTransmissionTime(proposedUser, server, 0);
-                System.out.println(proposedUser + " " + server + " Transmition time: " + transmissionTime_value);
+                elaboration.calculateTransmissionTime(proposedUser, server, 0);
+                elaboration.calculateComputationTime(proposedUser, server, 0);
+                elaboration.calculateLocalComputationTime(proposedUser, server,0);
+                elaboration.associateUserRuinDegree(proposedUser, server);
             }
-            System.out.println("-----------------------------------------END---------------------------------------\n");
 
-            System.out.println("----------------------------CALCULATE COMPUTING TIME----------------------------");
-            for (User proposedUser : server.getProposedUsers()) {
-                double computationTime_value = elaboration.calculateComputationTime(proposedUser, server, 0);
-                System.out.println(proposedUser + " " + server + " Computation time: " + computationTime_value);
-            }
-            System.out.println("-----------------------------------------END---------------------------------------\n");
-
-            System.out.println("----------------------------CALCULATE LOCAL COMPUTING TIME----------------------------");
-            for (User proposedUser : server.getProposedUsers()) {
-                double localComputationTime_value = elaboration.calculateLocalComputationTime(proposedUser, server, 0);
-                System.out.println(proposedUser + " " + server + " Local Computation time: " + localComputationTime_value);
-            }
-            System.out.println("-----------------------------------------END---------------------------------------\n");
-
-            System.out.println("-------------START WITH RUIN PROBABILITY-------------");
-            for (User proposedUser : server.getProposedUsers()){
-                Map<User, Double> ruinDegreeMap = elaboration.associateUserRuinDegree(proposedUser, server);
-                System.out.println(proposedUser + " Ruin degree: " + ruinDegreeMap.get(proposedUser));
-            }
-            System.out.println("-------------------------END-------------------------\n");
-
-
+            // Costruisco la lista di priorità
             List<User> priorityList = elaboration.buildPriorityList(server);
-            System.out.println("Priority list:\n" + priorityList + "\n");
 
-            System.out.println("START ASSOCIATION TASK-BUFFER");
+            System.out.println("START - ASSOCIATION TASK-BUFFER");
+            // Se il server ha buffer disponibile serve l'utente, altrimenti viene inserito in una lista per il ricalcolo
             for (User user : priorityList) {
-                double transmissionTime = elaboration.getList_value(user, server, elaboration.getTransmissionTime_listAlgoritm());
-                totalSystemTime += transmissionTime;
+                totalSystemTime += elaboration.getList_value(user, server, elaboration.getTransmissionTime_listAlgoritm());
 
                 if (server.getBuffer() >= user.getTask()) {
                     setValueAM(users.indexOf(user), servers.indexOf(server), 1);
                     server.reduceBuffer(user.getTask());
-
-                    double computationTime = elaboration.getList_value(user, server, elaboration.getComputationTime_listAlgoritm());
-                    totalSystemTime += computationTime;
-
-                    System.out.println("Update buffer: " + (int) server.getBuffer() + "\n");
+                    totalSystemTime += elaboration.getList_value(user, server, elaboration.getComputationTime_listAlgoritm());
 
                 } else {
-                    double localComputationTime = elaboration.getList_value(user, server, elaboration.getLocalComputationTime_listAlgoritm());
-                    totalSystemTime += localComputationTime * 0.8; // Penalizziamo meno il calcolo locale
                     unallocatedUsers.add(user);
-                    System.out.println("ERROR: BUFFER EXHAUSTED");
                 }
             }
 
-            totalUnusedBuffer += server.getBuffer();
-            System.out.println("buffer non utilizzato: " + (int) totalUnusedBuffer);
-
-            System.out.print("//////////////////////////////////////////////////////////////////\n");
-            System.out.println();
+            System.out.println("END - ASSOCIATION TASK-BUFFER\n");
         }
 
         // Tentativo di riallocazione per gli utenti rifiutati
-        System.out.println("\n\nSTART REALLOCATION PROCESS FOR UNALLOCATED USERS\n");
+        System.out.println("\n--------START - REALLOCATION PROCESS FOR UNALLOCATED USERS\n");
 
         for (User user : unallocatedUsers) {
-            System.out.println("Reallocating user: " + user);
-            Server newServer = chooseBestServer(user);
+            Server newServer = chooseSecondBestServer(user);
 
             if (newServer != null && newServer.getBuffer() >= user.getTask()) {
-                double newSNR = elaboration.calculateSNR(user, newServer);
-                System.out.println("Recalculated SNR for " + user + " on " + newServer + ": " + (int) newSNR);
-                elaboration.calculateTransmissionTime(user, newServer, 0);
-                elaboration.calculateComputationTime(user, newServer, 0);
-                elaboration.calculateLocalComputationTime(user, newServer, 0);
-
-                newServer.reduceBuffer(user.getTask());
                 setValueAM(users.indexOf(user), servers.indexOf(newServer), 1);
+                newServer.reduceBuffer(user.getTask());
 
-                double transmissionTime = elaboration.getList_value(user, newServer, elaboration.getTransmissionTime_listAlgoritm());
-                totalSystemTime += transmissionTime;
+                elaboration.calculateTransmissionTime(user, newServer, 0);
+                totalSystemTime += elaboration.getList_value(user, newServer, elaboration.getTransmissionTime_listAlgoritm());
 
-                double computationTime = elaboration.getList_value(user, newServer, elaboration.getComputationTime_listAlgoritm());
-                totalSystemTime += computationTime;
+                elaboration.calculateComputationTime(user, newServer, 0);
+                totalSystemTime += elaboration.getList_value(user, newServer, elaboration.getComputationTime_listAlgoritm());
 
-                System.out.println("User " + user + " reassigned to " + newServer);
+                System.out.println(user + " reassigned to " + newServer);
 
-            } else if (newServer == null) {
+            } else if (newServer == null){
                 System.out.println("FAILED to reallocate " + user + ". Task will be computed locally.");
+
             } else {
-                double localComputationTime = elaboration.getList_value(user, newServer, elaboration.getLocalComputationTime_listAlgoritm());
-                totalSystemTime += localComputationTime * 0.8;
+                // TODO trovare un modo per andare a sommare il tempo di calcolo locale anche di quelli che non trovano un server, magari creo una funzione solo per loro
+                elaboration.calculateTransmissionTime(user, newServer, 0);
+                totalSystemTime += elaboration.getList_value(user, newServer, elaboration.getTransmissionTime_listAlgoritm());
+                elaboration.calculateLocalComputationTime(user, newServer,0);
+                totalSystemTime += elaboration.getList_value(user, newServer, elaboration.getLocalComputationTime_listAlgoritm());
                 System.out.println("FAILED to reallocate " + user + ". Task will be computed locally.");
             }
         }
 
-        System.out.println("\nREALLOCATION PROCESS ENDED\n");
+        System.out.println("\n--------------------REALLOCATION PROCESS ENDED\n");
 
-        // Reset dei server
+        // Reset dei server e calcolo dello spazio inutilizzato
         for (Server s : servers) {
+            totalUnusedBuffer += s.getBuffer();
             s.setBuffer((int) s.getOriginalBuffer());
         }
     }
 
     private Server chooseBestServer(User user) {
+        // Scelgo il miglior server in base al rapposto segnale-rumore e al suo buffer disponibile
         Server bestServer = null;
         double bestMetric  = Double.NEGATIVE_INFINITY;
 
@@ -147,7 +106,7 @@ public class AlgoritmAssociation extends Association{
             System.out.println(user + " " + server + " SNR: " + (int) snr_value);
 
             if (bufferAvailability >= 0) {
-                double metric = snr_value / (1 + Math.abs(bufferAvailability)); // Penalizza server con poco buffer
+                double metric = snr_value / (1 + Math.abs(bufferAvailability)); // Penalizzo server con poco buffer e privilegio quello con snr più alto
 
                 if (metric > bestMetric) {
                     bestMetric = metric;
@@ -156,8 +115,29 @@ public class AlgoritmAssociation extends Association{
             }
         }
 
-        System.out.println("User choose: " + bestServer);
-        System.out.println();
+        System.out.println("User choose: " + bestServer + "\n");
+        return bestServer;
+    }
+
+    private Server chooseSecondBestServer(User user) {
+        Server bestServer = null;
+        double bestMetric  = Double.NEGATIVE_INFINITY;
+        List<Match> snr_list = elaboration.getSNR_list();
+
+        for (Server server : servers) {
+            double bufferAvailability = server.getBuffer() - user.getTask();
+
+            if (bufferAvailability >= 0) {
+                double metric = elaboration.getList_value(user, server, snr_list) / (1 + Math.abs(bufferAvailability)); // Penalizzo server con poco buffer e privilegio quello con snr più alto
+
+                if (metric > bestMetric) {
+                    bestMetric = metric;
+                    bestServer = server;
+                }
+            }
+        }
+
+        System.out.println("User choose: " + bestServer + "\n");
         return bestServer;
     }
 
