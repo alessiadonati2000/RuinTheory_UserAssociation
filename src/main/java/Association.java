@@ -7,6 +7,7 @@ public class Association {
     protected Elaboration elaboration;
     protected double totalUnusedBuffer;
     protected double totalSystemTime;
+    protected double totalEnergy;
 
     public Association() {}
 
@@ -55,4 +56,6 @@ public class Association {
     public double getTotalSystemTime() {
         return totalSystemTime;
     }
+
+    public double getTotalEnergy() { return totalEnergy; }
 }

@@ -8,7 +8,14 @@ public class Elaboration {
     private List<Match> computationTime_listRandom;
     private List<Match> localComputationTime_listAlgoritm;
     private List<Match> localComputationTime_listRandom;
+    private List<Match> transmissionEnergy_listAlgoritm;
+    private List<Match> transmissionEnergy_listRandom;
+    private List<Match> computationEnergy_listAlgoritm;
+    private List<Match> computationEnergy_listRandom;
+    private List<Match> localEnergy_listAlgoritm;
+    private List<Match> localEnergy_listRandom;
     final double BANDWIDTH = 20 * Math.pow(10, 6);
+    final double CHIP = 1e-28;
 
     public Elaboration() {
         this.snr_list = new ArrayList<>();
@@ -18,6 +25,12 @@ public class Elaboration {
         this.computationTime_listRandom = new ArrayList<>();
         this.localComputationTime_listAlgoritm = new ArrayList<>();
         this.localComputationTime_listRandom = new ArrayList<>();
+        this.transmissionEnergy_listAlgoritm = new ArrayList<>();
+        this.transmissionEnergy_listRandom = new ArrayList<>();
+        this.computationEnergy_listAlgoritm = new ArrayList<>();
+        this.computationEnergy_listRandom = new ArrayList<>();
+        this.localEnergy_listAlgoritm = new ArrayList<>();
+        this.localEnergy_listRandom = new ArrayList<>();
     }
 
     public double getList_value(User user, Server server, List<Match> list) {
@@ -63,12 +76,28 @@ public class Elaboration {
         return transmissionTime_value;
     }
 
+    public void calculateTransmissionEnergy(User user, Server server, int flag) {
+       if (flag == 0) {
+            transmissionEnergy_listAlgoritm.add(new Match(user, server, user.getTransmissionPower() * getList_value(user, server, transmissionTime_listAlgoritm)));
+        } else if (flag == 1) {
+            transmissionEnergy_listRandom.add(new Match(user, server, user.getTransmissionPower() * getList_value(user, server, transmissionTime_listRandom)));
+        }
+    }
+
     public List<Match> getTransmissionTime_listAlgoritm() {
         return transmissionTime_listAlgoritm;
     }
 
     public List<Match> getTransmissionTime_listRandom() {
         return transmissionTime_listRandom;
+    }
+
+    public List<Match> getTransmissionEnergy_listAlgoritm() {
+        return transmissionEnergy_listAlgoritm;
+    }
+
+    public List<Match> getTransmissionEnergy_listRandom() {
+        return transmissionEnergy_listRandom;
     }
 
     public void printTransmissionTimeListAlgoritm() {
@@ -96,12 +125,30 @@ public class Elaboration {
         return computationTime_value;
     }
 
+    public void calculateComputationEnergy(User user, Server server, int flag) {
+        double computationEnergy = Math.pow(server.COMPUTING_CAPACITY, 2) * server.CPU_CYCLExBIT * user.getTask();
+
+        if (flag == 0) {
+            computationEnergy_listAlgoritm.add(new Match(user, server, computationEnergy));
+        } else if (flag == 1) {
+            computationEnergy_listRandom.add(new Match(user, server, computationEnergy));
+        }
+    }
+
     public List<Match> getComputationTime_listAlgoritm(){
         return computationTime_listAlgoritm;
     }
 
     public List<Match> getComputationTime_listRandom(){
         return computationTime_listRandom;
+    }
+
+    public List<Match> getComputationEnergy_listAlgoritm(){
+        return computationEnergy_listAlgoritm;
+    }
+
+    public List<Match> getComputationEnergy_listRandom(){
+        return computationEnergy_listRandom;
     }
 
     public void printComputationTimeListAlgoritm() {
@@ -129,8 +176,22 @@ public class Elaboration {
         return localComputationTime_value;
     }
 
+    public void calculateLocalEnergy(User user, Server server, int flag) {
+        double localEnergy = Math.pow(user.LOCAL_COMPUTING_CAPACITY, 2) * server.CPU_CYCLExBIT * user.getTask();
+
+        if (flag == 0) {
+            localEnergy_listAlgoritm.add(new Match(user, server, localEnergy));
+        } else if (flag == 1) {
+            localEnergy_listRandom.add(new Match(user, server, localEnergy));
+        }
+    }
+
     public double calculateLocalComputationTimeWithoutServer(User user){
         return (user.CPU_CYCLExBIT * user.getTask()) / user.LOCAL_COMPUTING_CAPACITY;
+    }
+
+    public double calculateLocalEnergyWithoutServer(User user){
+        return Math.pow(user.LOCAL_COMPUTING_CAPACITY, 2) * 10 * user.getTask();
     }
 
     public List<Match> getLocalComputationTime_listAlgoritm(){
@@ -139,6 +200,14 @@ public class Elaboration {
 
     public List<Match> getLocalComputationTime_listRandom(){
         return localComputationTime_listRandom;
+    }
+
+    public List<Match> getLocalEnergy_listAlgoritm(){
+        return localEnergy_listAlgoritm;
+    }
+
+    public List<Match> getLocalEnergy_listRandom(){
+        return localEnergy_listRandom;
     }
 
     public void printLocalComputationTimeListAlgoritm() {
@@ -155,36 +224,72 @@ public class Elaboration {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private double calculateRuinProbability(Server server, double time) {
-        double sumTask = 0;
+        // Sigmoide
+        double totalArrivalData = 0;
         for (User _user : server.getProposedUsers()){
-            sumTask += _user.getTask();
+            totalArrivalData += _user.getTask();
         }
+        double initialSurplus = server.getBuffer();
 
-        double term = (server.getBuffer() - sumTask) / ((server.COMPUTING_CAPACITY * time)/ server.CPU_CYCLExBIT);
+        double term = (initialSurplus - totalArrivalData) / ((server.COMPUTING_CAPACITY * time) / server.CPU_CYCLExBIT);
         double ruinProbability = 1 / (1 + Math.exp(term));
+
+        ruinProbability = Math.min(ruinProbability, 1);
 
         return ruinProbability;
     }
 
-    private double calculateRuinDegree(User user, Server server){
-        return user.getTask() / calculateRuinProbability(server, 0.1); //ruin degree
-    }
+    /*public double calculateRuinProbability(Server server, User user) {
+        // Formula 15 del paper
+        double initialSurplus = server.getBuffer();
+        double premium = (server.COMPUTING_CAPACITY * 0.1) / server.CPU_CYCLExBIT;
+        double totalArrivalData = user.getTask();
+        double epsilon = 1;
 
-    public Map<User, Double> associateUserRuinDegree(User user, Server server) {
-        Map<User, Double> ruinDegreeMap = new HashMap<>();
-        double ruinDegree = calculateRuinDegree(user, server);
-        ruinDegreeMap.put(user, ruinDegree);
-        return ruinDegreeMap;
+        double alpha = 0.5;
+        double beta = totalArrivalData * 0.1;
+
+        double ruinProbability = Math.exp(-1 * (alpha * (initialSurplus + premium - epsilon - beta) / totalArrivalData));
+
+        if (initialSurplus < epsilon) {
+            ruinProbability += 0.2;
+        } else if (initialSurplus < totalArrivalData + epsilon) {
+            ruinProbability += 0.1;
+        }
+
+        ruinProbability = Math.min(ruinProbability, 1);
+
+        return ruinProbability;
+    }*/
+
+
+    public double calculateImpactFactor(User user, Server server) {
+        double ruinProbability = calculateRuinProbability(server, 0.1);
+        //double ruinProbability = calculateRuinProbability(server, user);
+
+        if (ruinProbability == 0) {
+            ruinProbability = 0.01;
+        }
+
+        double impactFactor = user.getTask() / ruinProbability;
+
+        return impactFactor;
     }
 
     public List<User> buildPriorityList(Server server) {
         server.getProposedUsers().sort(Comparator.comparing(user -> {
-            double ruinDegree = associateUserRuinDegree(user, server).get(user);
-            double taskSize = user.getTask();
-            return ruinDegree * taskSize;  // Peso il grado di rovina in base al task
+            double impactFactor = calculateImpactFactor(user, server);
+            //return impactFactor * user.getTask();
+            return impactFactor * user.getTask();
         }));
         return server.getProposedUsers();
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public List<User> sortUnallocatedUsersByTask(List<User> unallocatedUsers) {
+        unallocatedUsers.sort(Comparator.comparing(User::getTask));
+        return unallocatedUsers;
+    }
+
 }

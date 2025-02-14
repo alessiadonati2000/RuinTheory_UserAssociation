@@ -6,7 +6,6 @@ public class Server {
     private double buffer;
     private double originalBuffer;
     private List<User> proposedUsers;
-
     final double COMPUTING_CAPACITY = 6 * Math.pow(10, 5);
     final int CPU_CYCLExBIT = 10;
 
