@@ -3,7 +3,7 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) {
-        int numSimulations = 500;
+        int numSimulations = 1000;
         int numServer = 3;
         int maxUser = 300;
         int step = 5;
@@ -11,8 +11,8 @@ public class Main {
         int[] meanAssociatedUsersRandom = new int[maxUser/step + 1];
         int[] meanUnusedResourcesAlgoritm = new int[maxUser/step + 1];          // Voglio che l'algoritmo minimizzi le risorse non utilizzate -> efficienza
         int[] meanUnusedResourcesRandom = new int[maxUser/step + 1];
-        double[] meanTotalSystemTimeAlgoritm = new double[maxUser/step + 1];    // Voglio che l'algoritmo abbia un tempo totale minore -> velocità
-        double[] meanTotalSystemTimeRandom = new double[maxUser/step + 1];
+        int[] meanTotalSystemTimeAlgoritm = new int[maxUser/step + 1];    // Voglio che l'algoritmo abbia un tempo totale minore -> velocità
+        int[] meanTotalSystemTimeRandom = new int[maxUser/step + 1];
         int index = 0;
 
         // Voglio simulare in una unica run i vari risultati al variare del numero di utenti
@@ -71,8 +71,8 @@ public class Main {
             meanUnusedResourcesAlgoritm[index] = (int) (sumUnusedResourcesAlgoritm / numSimulations);
             meanUnusedResourcesRandom[index] = (int) (sumUnusedResourcesRandom / numSimulations);
 
-            meanTotalSystemTimeAlgoritm[index] = sumTotalSystemTimeAlgoritm / numSimulations;
-            meanTotalSystemTimeRandom[index] = sumTotalSystemTimeRandom / numSimulations;
+            meanTotalSystemTimeAlgoritm[index] = (int) sumTotalSystemTimeAlgoritm / numSimulations;
+            meanTotalSystemTimeRandom[index] = (int) sumTotalSystemTimeRandom / numSimulations;
 
             index++;
 

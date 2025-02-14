@@ -65,21 +65,16 @@ public class AlgoritmAssociation extends Association{
                 setValueAM(users.indexOf(user), servers.indexOf(newServer), 1);
                 newServer.reduceBuffer(user.getTask());
 
-                elaboration.calculateTransmissionTime(user, newServer, 0);
-                totalSystemTime += elaboration.getList_value(user, newServer, elaboration.getTransmissionTime_listAlgoritm());
-
                 elaboration.calculateComputationTime(user, newServer, 0);
                 totalSystemTime += elaboration.getList_value(user, newServer, elaboration.getComputationTime_listAlgoritm());
 
                 System.out.println(user + " reassigned to " + newServer);
 
             } else if (newServer == null){
+                totalSystemTime += elaboration.calculateLocalComputationTimeWithoutServer(user);
                 System.out.println("FAILED to reallocate " + user + ". Task will be computed locally.");
 
             } else {
-                // TODO trovare un modo per andare a sommare il tempo di calcolo locale anche di quelli che non trovano un server, magari creo una funzione solo per loro
-                elaboration.calculateTransmissionTime(user, newServer, 0);
-                totalSystemTime += elaboration.getList_value(user, newServer, elaboration.getTransmissionTime_listAlgoritm());
                 elaboration.calculateLocalComputationTime(user, newServer,0);
                 totalSystemTime += elaboration.getList_value(user, newServer, elaboration.getLocalComputationTime_listAlgoritm());
                 System.out.println("FAILED to reallocate " + user + ". Task will be computed locally.");

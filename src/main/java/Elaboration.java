@@ -129,6 +129,10 @@ public class Elaboration {
         return localComputationTime_value;
     }
 
+    public double calculateLocalComputationTimeWithoutServer(User user){
+        return (user.CPU_CYCLExBIT * user.getTask()) / user.LOCAL_COMPUTING_CAPACITY;
+    }
+
     public List<Match> getLocalComputationTime_listAlgoritm(){
         return localComputationTime_listAlgoritm;
     }
