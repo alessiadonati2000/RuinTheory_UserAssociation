@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class User {
     private double task;
@@ -26,7 +25,7 @@ public class User {
     }
 
     public double calculateTask(double min, double max){
-        return ((Math.random() * (max - min + 1)) + min)*8;
+        return ((Math.random() * (max - min + 1)) + min)*8; // So i have bits
     }
 
     public double calculateTransmissionPower(double min, double max){

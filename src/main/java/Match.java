@@ -1,3 +1,5 @@
+// This class is used for create a structure where i save User, Server and a value specific for different context
+
 public class Match {
     private User user;
     private Server server;

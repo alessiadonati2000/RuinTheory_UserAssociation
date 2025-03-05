@@ -1,3 +1,5 @@
+// this class contains the functions in common between the two association methods
+
 import java.util.*;
 
 public class Association {

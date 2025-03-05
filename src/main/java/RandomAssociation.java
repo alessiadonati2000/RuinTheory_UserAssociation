@@ -16,7 +16,7 @@ public class RandomAssociation extends Association{
         inizializeAM();
 
         for (User user : users) {
-            Server randomServer = chooseRandomServer(user);
+            Server randomServer = chooseRandomServer();
             if (randomServer != null) {
                 randomServer.getProposedUsers().add(user);
             }
@@ -55,7 +55,7 @@ public class RandomAssociation extends Association{
         }
     }
 
-    private Server chooseRandomServer(User user) {
+    private Server chooseRandomServer() {
         Random rand = new Random();
         Server randomServer = servers.get(rand.nextInt(servers.size()));
         return randomServer;
