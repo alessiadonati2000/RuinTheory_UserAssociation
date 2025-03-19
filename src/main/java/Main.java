@@ -39,7 +39,7 @@ public class Main {
                 List<User> usersRandom = deepCopyUser(users);  // In this way i have a list of User with the same features generated
                 for (User u : users){
                     System.out.println(u);
-                }
+                }  
 
                 // Generate servers
                 Server server = new Server();
