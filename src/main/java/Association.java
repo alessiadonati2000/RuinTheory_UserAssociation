@@ -2,7 +2,7 @@
 
 import java.util.*;
 
-public class Association {
+abstract class Association {
     protected List<User> users;
     protected List<Server> servers;
     protected int[][] associationMatrix;
